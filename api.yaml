@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   version: 1.0.0
   title: HiPPER
-host: 'ec2-52-59-69-22.eu-central-1.compute.amazonaws.com:8090'
+host: '35.198.70.235:8090'
 basePath: /
 tags:
   - name: customer
