@@ -14,13 +14,58 @@ tags:
   - name: product
     description: create and manage providers signups
 paths:
-  /register/customer/signup:
+  /register/customer/email/login:
     post:
       tags:
         - customer
       summary: Create new customer in the ststem
       description: ''
-      operationId: addPet
+      operationId: login
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          in: query
+          description: The user email for login
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          type: string
+      responses:
+        '405':
+          description: Invalid input
+  /register/customer/email/check:
+    post:
+      tags:
+        - customer
+      summary: Create new customer in the ststem
+      description: ''
+      operationId: emailCheck
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          in: query
+          description: The user email for login
+          required: true
+          type: string
+      responses:
+        '405':
+          description: Invalid input
+  /register/customer/email/signup:
+    post:
+      tags:
+        - customer
+      summary: Create new customer in the ststem
+      description: ''
+      operationId: emailSignup
       consumes:
         - application/json
       produces:
@@ -49,13 +94,33 @@ paths:
       responses:
         '405':
           description: Invalid input
-  /public/auth/facebook/token:
+  /register/customer/facebook/token:
     post:
       tags:
         - customer
       summary: Login or register using a facebook token
       description: 'Use scope=public_profile,email in the requset'
       operationId: loginFacebookToken
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: query
+          description: The
+          required: true
+          type: string
+      responses:
+        '405':
+          description: Invalid input
+  /register/customer/google/token:
+    post:
+      tags:
+        - customer
+      summary: Login or register using a Google token
+      description: 'Use scope=profile,email in the requset'
+      operationId: loginGoogleToken
       consumes:
         - application/json
       produces:
