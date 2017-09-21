@@ -5,20 +5,27 @@ info:
 host: '35.198.70.235:8090'
 basePath: /
 tags:
-  - name: customer
+  - name: Customer Register
     description: create and manage customers signups
-  - name: register/provider
-    description: create and manage providers signups
-  - name: tours generator
+  - name: Customer Info
+    description: create and manage customers signups
+  - name: Tours Generator
     description: Create and get new tours
-  - name: product
+  - name: Customer Messages
+    description: Get the customer messsages
+  - name: Provider Register
     description: create and manage providers signups
+  - name: Product
+    description: create and manage Products
+  - name: Provider Redeem
+    description: Redeem the customer's tour
+ 
 paths:
   /register/customer/email/login:
     post:
       tags:
-        - customer
-      summary: Create new customer in the ststem
+        - Customer Register
+      summary: Create new customer in the system
       description: ''
       operationId: login
       consumes:
@@ -42,8 +49,8 @@ paths:
   /register/customer/email/check:
     post:
       tags:
-        - customer
-      summary: Create new customer in the ststem
+        - Customer Register
+      summary: Create new customer in the system
       description: ''
       operationId: emailCheck
       consumes:
@@ -62,8 +69,8 @@ paths:
   /register/customer/email/signup:
     post:
       tags:
-        - customer
-      summary: Create new customer in the ststem
+        - Customer Register
+      summary: Create new customer in the system
       description: ''
       operationId: emailSignup
       consumes:
@@ -97,7 +104,7 @@ paths:
   /register/customer/facebook/token:
     post:
       tags:
-        - customer
+        - Customer Register
       summary: Login or register using a facebook token
       description: 'Use scope=public_profile,email in the requset'
       operationId: loginFacebookToken
@@ -117,7 +124,7 @@ paths:
   /register/customer/google/token:
     post:
       tags:
-        - customer
+        - Customer Register
       summary: Login or register using a Google token
       description: 'Use scope=profile,email in the requset'
       operationId: loginGoogleToken
@@ -137,7 +144,7 @@ paths:
   '/secured/customer/{id}/buy/suggestedtour/{tour_code}':
     post:
       tags:
-        - customer
+        - Customer Info
       summary: Assign the tour for the customer
       description: >-
         The customer is already registered in the system, use after the buying
@@ -171,13 +178,85 @@ paths:
       responses:
         '405':
           description: Invalid input
-  /register/provider/signup:
+          
+  /secured/customer/{id}/messages/system/{status}:
     get:
       tags:
-        - register/provider
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
-      operationId: getInventory
+        - Customer Messages
+      summary: Get customer messages by status
+      description: >-
+        The customer is already registered in the system, use after the buying
+        confirmation
+      operationId: getCustomerMessages
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          type: string
+        - name: status
+          in: path
+          description: The messages status
+          required: true
+          type: string
+      responses:
+        '405':
+          description: Invalid input
+  /secured/customer/{id}/messages/system/answer/{message_id}:
+    post:
+      tags:
+        - Customer Messages
+      summary: Get customer messages by status
+      description: >-
+        Answer to cusromer message
+      operationId: ansnwerMessage
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          type: string
+        - name: message_id
+          in: path
+          description: The messages status
+          required: true
+          type: string
+      responses:
+        '405':
+          description: Invalid input
+  /register/provider/signup:
+    post:
+      tags:
+        - Provider Register
+      summary: Signup new provider
+      description: Create new provider in the system
+      operationId: signupProvider
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+              format: string
+  /register/provider/login:
+    post:
+      tags:
+        - Provider Register
+      summary: Login existing provider
+      description: Return authentication for the provider
+      operationId: loginProvider
       produces:
         - application/json
       parameters: []
@@ -192,7 +271,7 @@ paths:
   /tours/generator:
     post:
       tags:
-        - tours generator
+        - Tours Generator
       summary: Generate tours by demand
       description: Generate tours by demand
       produces:
@@ -213,13 +292,21 @@ paths:
           description: Current time
           required: true
           type: number
+        - in: "body"
+          name: "body"
+          description: "List of user object"
+          required: true
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/tourRequest"
       responses:
         '200':
           description: successful operation
   '/tours/generator/list/{list_token}':
     get:
       tags:
-        - tours generator
+        - Tours Generator
       summary: Get the generated list for the request
       description: Get the generated list for the request
       produces:
@@ -241,7 +328,7 @@ paths:
   '/secured/provider/{providerId}/product':
     get:
       tags:
-        - product
+        - Product
       summary: Get provider products
       description: get all the products for the provider
       operationId: findAllByProviderId
@@ -258,7 +345,7 @@ paths:
           description: successful operation
     post:
       tags:
-        - product
+        - Product
       summary: Create new provider product
       description: Add new product for the provider
       operationId: createProduct
@@ -296,7 +383,7 @@ paths:
   '/secured/provider/{providerId}/product/{product_id}':
     put:
       tags:
-        - product
+        - Product
       summary: Change product
       description: Change product for the provider
       operationId: updateProduct
@@ -333,7 +420,7 @@ paths:
           description: successful operation
     delete:
       tags:
-        - product
+        - Product
       summary: Delete provider product
       description: Delete one product for the provider
       operationId: deleteProduct
@@ -348,6 +435,34 @@ paths:
         - name: product_id
           in: path
           description: The id of the product to delete
+          required: true
+          type: string
+      responses:
+        default:
+          description: successful operation
+  '/secured/provider/{providerId}/redeem':
+    post:
+      tags:
+        - Provider Redeem
+      summary: Use the tour code to redeem the tour 
+      description: Set the customer tour as used for that provider
+      operationId: redeemTour
+      produces:
+        - application/json
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          type: string
+        - name: code
+          in: query
+          description: Active tour code
+          required: true
+          type: string
+        - name: method
+          in: query
+          description: set 'scan' or 'manual'
           required: true
           type: string
       responses:
@@ -391,8 +506,18 @@ definitions:
       complete:
         type: boolean
         default: false
-    xml:
-      name: Order
+  tourRequest:
+    type: object
+    properties:
+      userID:
+        type: integer
+        format: int64
+      location:
+        type: integer
+        format: int64
+      requestTime:
+        type: integer
+        format: int32
   error:
     type: object
     properties:
