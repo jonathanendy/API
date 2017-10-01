@@ -1,13 +1,13 @@
-swagger: '2.0'
+openapi: "3.0.0"
 info:
   version: 1.0.0
   title: HiPPER
-host: '35.198.70.235:8090'
-basePath: /
+servers: 
+  - url: '35.198.70.235:8090'
 tags:
   - name: Customer Register
     description: create and manage customers signups
-  - name: Customer Info
+  - name: Customer Actions
     description: create and manage customers signups
   - name: Tours Generator
     description: Create and get new tours
@@ -15,11 +15,12 @@ tags:
     description: Get the customer messsages
   - name: Provider Register
     description: create and manage providers signups
+  - name: Provider
+    description: manage provider data
   - name: Product
     description: create and manage Products
   - name: Provider Redeem
     description: Redeem the customer's tour
- 
 paths:
   /register/customer/email/login:
     post:
@@ -28,21 +29,19 @@ paths:
       summary: Create new customer in the system
       description: ''
       operationId: login
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: email
           in: query
           description: The user email for login
           required: true
-          type: string
+          schema:
+            type: string
         - name: password
           in: query
           description: The password for login in clear text
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '405':
           description: Invalid input
@@ -53,16 +52,13 @@ paths:
       summary: Create new customer in the system
       description: ''
       operationId: emailCheck
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: email
           in: query
           description: The user email for login
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '405':
           description: Invalid input
@@ -73,31 +69,31 @@ paths:
       summary: Create new customer in the system
       description: ''
       operationId: emailSignup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: email
           in: query
           description: The user email for login
           required: true
-          type: string
+          schema:
+            type: string
         - name: username
           in: query
           description: The username for login
           required: true
-          type: string
+          schema:
+            type: string
         - name: password
           in: query
           description: The password for login in clear text
           required: true
-          type: string
+          schema:
+            type: string
         - name: cpassword
           in: query
           description: The password repeats for login in clear text
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '405':
           description: Invalid input
@@ -108,16 +104,13 @@ paths:
       summary: Login or register using a facebook token
       description: 'Use scope=public_profile,email in the requset'
       operationId: loginFacebookToken
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: token
           in: query
           description: The
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '405':
           description: Invalid input
@@ -128,58 +121,100 @@ paths:
       summary: Login or register using a Google token
       description: 'Use scope=profile,email in the requset'
       operationId: loginGoogleToken
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: token
           in: query
           description: The
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '405':
           description: Invalid input
   '/secured/customer/{id}/buy/suggestedtour/{tour_code}':
     post:
       tags:
-        - Customer Info
+        - Customer Actions
       summary: Assign the tour for the customer
       description: >-
         The customer is already registered in the system, use after the buying
         confirmation
       operationId: buySuggestedTourByCustomer
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           description: the database id of the customer
           required: true
-          type: string
+          schema:
+            type: string
         - name: tour_code
           in: path
           description: The unieqe code of that tour
           required: true
-          type: string
+          schema:
+            type: string
         - name: password
           in: query
           description: The password for login in clear text
           required: true
-          type: string
+          schema:
+            type: string
         - name: cpassword
           in: query
           description: The password repeats for login in clear text
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '405':
           description: Invalid input
-          
-  /secured/customer/{id}/messages/system/{status}:
+  '/secured/customer/{id}/tours/active':
+    get:
+      tags:
+        - Customer Actions
+      summary: Get tour info the active tour
+      description: get
+      operationId: getActiveTour
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+  '/secured/customer/{id}/redeem':
+    post:
+      tags:
+        - Customer Actions
+      summary: Use the tour code to redeem the tour
+      description: Set the customer tour as used for that provider
+      operationId: redeemTourCustomer
+      parameters:
+        - name: id
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: code
+          in: query
+          description: Active tour code
+          required: true
+          schema:
+            type: string
+        - name: method
+          in: query
+          description: set 'provider_scan' or 'provider_code'
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  '/secured/customer/{id}/messages/system/{status}':
     get:
       tags:
         - Customer Messages
@@ -188,47 +223,42 @@ paths:
         The customer is already registered in the system, use after the buying
         confirmation
       operationId: getCustomerMessages
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           description: the database id of the customer
           required: true
-          type: string
+          schema:
+            type: string
         - name: status
           in: path
           description: The messages status
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '405':
           description: Invalid input
-  /secured/customer/{id}/messages/system/answer/{message_id}:
+  '/secured/customer/{id}/messages/system/answer/{message_id}':
     post:
       tags:
         - Customer Messages
       summary: Get customer messages by status
-      description: >-
-        Answer to cusromer message
+      description: Answer to cusromer message
       operationId: ansnwerMessage
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           description: the database id of the customer
           required: true
-          type: string
+          schema:
+            type: string
         - name: message_id
           in: path
           description: The messages status
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '405':
           description: Invalid input
@@ -239,17 +269,10 @@ paths:
       summary: Signup new provider
       description: Create new provider in the system
       operationId: signupProvider
-      produces:
-        - application/json
       parameters: []
       responses:
         '200':
           description: successful operation
-          schema:
-            type: object
-            additionalProperties:
-              type: string
-              format: string
   /register/provider/login:
     post:
       tags:
@@ -257,49 +280,42 @@ paths:
       summary: Login existing provider
       description: Return authentication for the provider
       operationId: loginProvider
-      produces:
-        - application/json
       parameters: []
       responses:
         '200':
           description: successful operation
-          schema:
-            type: object
-            additionalProperties:
-              type: string
-              format: string
   /tours/generator:
     post:
       tags:
         - Tours Generator
       summary: Generate tours by demand
       description: Generate tours by demand
-      produces:
-        - application/json
       parameters:
         - name: userID
           in: query
           description: The user id
           required: false
-          type: string
+          schema:
+            type: string
         - name: location
           in: query
           description: GEO location for the request  34.123;23.22344
           required: true
-          type: string
+          schema:
+            type: string
         - name: requestTime
           in: query
           description: Current time
           required: true
-          type: number
-        - in: "body"
-          name: "body"
-          description: "List of user object"
-          required: true
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/tourRequest"
+            type: number
+      requestBody:
+        description: Info about the provider location
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/tourRequest'
       responses:
         '200':
           description: successful operation
@@ -309,22 +325,163 @@ paths:
         - Tours Generator
       summary: Get the generated list for the request
       description: Get the generated list for the request
-      produces:
-        - application/json
       parameters:
         - name: list_token
           in: path
           description: The token recieved when generate requested
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '200':
           description: successful operation
+  '/secured/provider/{providerId}':
+    get:
+      tags:
+        - Provider
+      summary: Get all provider info
+      description: Add new product for the provider
+      operationId: getProvider
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
           schema:
-            type: object
-            additionalProperties:
-              type: integer
-              format: int32
+            type: string
+        - name: productName
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: productType
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: price
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: description
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  '/secured/provider/{providerId}/address':
+    post:
+      tags:
+        - Provider
+      summary: Create new provider product
+      description: Add new product for the provider
+      operationId: updateProviderAddress
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Info about the provider location
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/address'
+      responses:
+        default:
+          description: successful operation
+  '/secured/provider/{providerId}/information':
+    post:
+      tags:
+        - Provider
+      summary: Create new provider product
+      description: Add new product for the provider
+      operationId: updateProviderInformation
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: productName
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: productType
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: price
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: description
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  '/secured/provider/{providerId}/bank-details':
+    post:
+      tags:
+        - Provider
+      summary: Create new provider product
+      description: Add new product for the provider
+      operationId: updateBankDetails
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: productName
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: productType
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: price
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: description
+          in: query
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
   '/secured/provider/{providerId}/product':
     get:
       tags:
@@ -332,14 +489,13 @@ paths:
       summary: Get provider products
       description: get all the products for the provider
       operationId: findAllByProviderId
-      produces:
-        - application/json
       parameters:
         - name: providerId
           in: path
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         default:
           description: successful operation
@@ -349,34 +505,37 @@ paths:
       summary: Create new provider product
       description: Add new product for the provider
       operationId: createProduct
-      produces:
-        - application/json
       parameters:
         - name: providerId
           in: path
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: productName
           in: query
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: productType
           in: query
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: price
           in: query
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: description
           in: query
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         default:
           description: successful operation
@@ -387,34 +546,37 @@ paths:
       summary: Change product
       description: Change product for the provider
       operationId: updateProduct
-      produces:
-        - application/json
       parameters:
         - name: providerId
           in: path
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: productName
           in: query
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: productType
           in: query
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: price
           in: query
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: description
           in: query
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         default:
           description: successful operation
@@ -424,19 +586,19 @@ paths:
       summary: Delete provider product
       description: Delete one product for the provider
       operationId: deleteProduct
-      produces:
-        - application/json
       parameters:
         - name: providerId
           in: path
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: product_id
           in: path
           description: The id of the product to delete
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         default:
           description: successful operation
@@ -444,87 +606,116 @@ paths:
     post:
       tags:
         - Provider Redeem
-      summary: Use the tour code to redeem the tour 
+      summary: Use the tour code to redeem the tour
       description: Set the customer tour as used for that provider
       operationId: redeemTour
-      produces:
-        - application/json
       parameters:
         - name: providerId
           in: path
           description: The id of the provider
           required: true
-          type: string
+          schema:
+            type: string
         - name: code
           in: query
           description: Active tour code
           required: true
-          type: string
+          schema:
+            type: string
         - name: method
           in: query
-          description: set 'scan' or 'manual'
+          description: set 'provider_scan' or 'provider_code'
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         default:
           description: successful operation
-securityDefinitions:
-  petstore_auth:
-    type: oauth2
-    authorizationUrl: 'http://petstore.swagger.io/oauth/dialog'
-    flow: implicit
-    scopes:
-      'write:pets': modify pets in your account
-      'read:pets': read your pets
-  api_key:
-    type: apiKey
-    name: api_key
-    in: header
-definitions:
-  customer:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-      petId:
-        type: integer
-        format: int64
-      quantity:
-        type: integer
-        format: int32
-      shipDate:
-        type: string
-        format: date-time
-      status:
-        type: string
-        description: Order Status
-        enum:
-          - placed
-          - approved
-          - delivered
-      complete:
-        type: boolean
-        default: false
-  tourRequest:
-    type: object
-    properties:
-      userID:
-        type: integer
-        format: int64
-      location:
-        type: integer
-        format: int64
-      requestTime:
-        type: integer
-        format: int32
-  error:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-      name:
-        type: string
-    xml:
-      name: Category
+# securityDefinitions:
+#  petstore_auth:
+#    type: oauth2
+#    authorizationUrl: 'http://petstore.swagger.io/oauth/dialog'
+#    flow: implicit
+#    scopes:
+#      'write:pets': modify pets in your account
+#      'read:pets': read your pets
+#  api_key:
+#    type: apiKey
+#    name: api_key
+#    in: header
+components:
+  schemas:
+    customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        petId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int32
+        shipDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Order Status
+          enum:
+            - placed
+            - approved
+            - delivered
+        complete:
+          type: boolean
+          default: false
+    tourRequest:
+      type: object
+      properties:
+        userID:
+          type: integer
+          format: int64
+        location:
+          $ref: '#/components/schemas/location'
+        requestTime:
+          type: integer
+          format: int32
+    location:
+      type: object
+      properties:
+        x:
+          type: number
+          format: dubble
+        y:
+          type: number
+          format: dubble
+    address:
+      type: object
+      properties:
+        adress1:
+          type: string
+        address2:
+          type: string
+        district:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        postalCode:
+          type: string
+        phone:
+          type: string
+        location:
+          $ref: '#/components/schemas/location'
+    error:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Category
