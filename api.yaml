@@ -22,113 +22,109 @@ tags:
   - name: Provider Redeem
     description: Redeem the customer's tour
 paths:
-  /register/customer/email/login:
+  '/register/customer/email/login':
     post:
       tags:
         - Customer Register
-      summary: Create new customer in the system
+      summary: Login by Email
       description: ''
       operationId: login
-      parameters:
-        - name: email
-          in: query
-          description: The user email for login
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/login_request'
       responses:
+        '200':
+          description: OK
+          $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  /register/customer/email/check:
+  '/register/customer/email/check':
     post:
       tags:
         - Customer Register
-      summary: Create new customer in the system
-      description: ''
+      summary: Check Email Address
       operationId: emailCheck
-      parameters:
-        - name: email
-          in: query
-          description: The user email for login
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              required:
+              - token
       responses:
         '405':
           description: Invalid input
-  /register/customer/email/signup:
+  '/register/customer/email/signup':
     post:
       tags:
         - Customer Register
-      summary: Create new customer in the system
-      description: ''
+      summary: Signup by Email
       operationId: emailSignup
-      parameters:
-        - name: email
-          in: query
-          description: The user email for login
-          required: true
-          schema:
-            type: string
-        - name: username
-          in: query
-          description: The username for login
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: true
-          schema:
-            type: string
-        - name: cpassword
-          in: query
-          description: The password repeats for login in clear text
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/login_request'
       responses:
+        '200':
+          description: OK
+          $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  /register/customer/facebook/token:
+  '/register/customer/facebook/token':
     post:
       tags:
         - Customer Register
       summary: Login or register using a facebook token
       description: 'Use scope=public_profile,email in the requset'
       operationId: loginFacebookToken
-      parameters:
-        - name: token
-          in: query
-          description: The
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+              required:
+              - token
       responses:
+        '200':
+          description: OK
+          $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  /register/customer/google/token:
+  '/register/customer/google/token':
     post:
       tags:
         - Customer Register
       summary: Login or register using a Google token
       description: 'Use scope=profile,email in the requset'
       operationId: loginGoogleToken
-      parameters:
-        - name: token
-          in: query
-          description: The
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+              required:
+              - token
       responses:
+        '200':
+          description: OK
+          $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
   '/secured/customer/{id}/buy/suggestedtour/{tour_code}':
@@ -153,18 +149,13 @@ paths:
           required: true
           schema:
             type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: true
-          schema:
-            type: string
-        - name: cpassword
-          in: query
-          description: The password repeats for login in clear text
-          required: true
-          schema:
-            type: string
+      requestBody:
+        description: Info about the purch
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/buy_tour'
       responses:
         '405':
           description: Invalid input
@@ -199,18 +190,13 @@ paths:
           required: true
           schema:
             type: string
-        - name: code
-          in: query
-          description: Active tour code
-          required: true
-          schema:
-            type: string
-        - name: method
-          in: query
-          description: set 'provider_scan' or 'provider_code'
-          required: true
-          schema:
-            type: string
+      requestBody:
+        description: Info about the purch
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/redeem_request'
       responses:
         default:
           description: successful operation
@@ -259,31 +245,16 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        description: Info about the purch
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/user_message_answer'
       responses:
         '405':
           description: Invalid input
-  /register/provider/signup:
-    post:
-      tags:
-        - Provider Register
-      summary: Signup new provider
-      description: Create new provider in the system
-      operationId: signupProvider
-      parameters: []
-      responses:
-        '200':
-          description: successful operation
-  /register/provider/login:
-    post:
-      tags:
-        - Provider Register
-      summary: Login existing provider
-      description: Return authentication for the provider
-      operationId: loginProvider
-      parameters: []
-      responses:
-        '200':
-          description: successful operation
   /tours/generator:
     post:
       tags:
@@ -335,6 +306,57 @@ paths:
       responses:
         '200':
           description: successful operation
+          $ref: '#/components/schemas/suggested_tour'
+  '/tours/generator/join/{active_tour_code}':
+    get:
+      tags:
+        - Tours Generator
+      summary: Get the generated list for the request
+      description: Get the generated list for the request
+      parameters:
+        - name: active_tour_code
+          in: path
+          description: Tour Code from an active tour
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+  '/register/provider/signup':
+    post:
+      tags:
+        - Provider Register
+      summary: Signup new provider
+      description: Create new provider in the system
+      operationId: signupProvider
+      requestBody:
+        description: Info about the provider location
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/provider_signup'
+      responses:
+        '200':
+          description: successful operation
+  '/register/provider/login':
+    post:
+      tags:
+        - Provider Register
+      summary: Login existing provider
+      description: Return authentication for the provider
+      operationId: loginProvider
+      requestBody:
+        description: Info about the provider location
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/login_request'
+      responses:
+        '200':
+          description: successful operation
   '/secured/provider/{providerId}':
     get:
       tags:
@@ -345,30 +367,6 @@ paths:
       parameters:
         - name: providerId
           in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: productName
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: productType
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: price
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: description
-          in: query
           description: The id of the provider
           required: true
           schema:
@@ -518,24 +516,13 @@ paths:
           required: true
           schema:
             type: string
-        - name: productType
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: price
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: description
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
+      requestBody:
+        description: Info about the provider location
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/product'
       responses:
         default:
           description: successful operation
@@ -645,31 +632,73 @@ paths:
 #    in: header
 components:
   schemas:
+    login_request:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    
+    login_response:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        scope:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: number
+        customer_id:
+          type: string
+        provider_id:
+          type: string
+    
     customer:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
-        petId:
-          type: integer
-          format: int64
-        quantity:
+          type: string
+        email:
+          type: string
+        systemLanguage:
+          type: string
+          enum: [eng, esp]
+        score:
           type: integer
           format: int32
-        shipDate:
+        prefereces:
+          $ref: '#/components/schemas/CustomerTourPreferences'
+        details:
+          $ref: '#/components/schemas/CustomerDetails'
+    CustomerTourPreferences:
+      type: object
+      properties:
+        id:
           type: string
-          format: date-time
-        status:
+        walker:
+          type: integer
+          format: int32
+    CustomerDetails:
+      type: object
+      properties:
+        id:
           type: string
-          description: Order Status
-          enum:
-            - placed
-            - approved
-            - delivered
-        complete:
-          type: boolean
-          default: false
+        homeCountry:
+          type: string
+        gender:
+          type: string
+          enum: [m, f]
+        age:
+          type: integer
+          format: int32
+        birthDate:
+          type: string
+    
     tourRequest:
       type: object
       properties:
@@ -690,6 +719,7 @@ components:
         y:
           type: number
           format: dubble
+    
     address:
       type: object
       properties:
@@ -709,6 +739,118 @@ components:
           type: string
         location:
           $ref: '#/components/schemas/location'
+    
+    buy_tour:
+      type: object
+      properties:
+        confirmation_id:
+          type: string
+        time:
+          type: string
+          
+    suggested_tour:
+      type: object
+      properties:
+        id:
+          type: string
+        tourCode:
+          type: string
+        tourRequestToken:
+          type: string
+        name:
+          type: string
+        pictureURL:
+          type: string
+        price:
+          type: number
+        distance:
+          type: string
+        generatedTime:
+          type: string
+        tourTime:
+          type: string
+    
+    provider_signup:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        providerName:
+          type: string
+        contactName:
+          type: string
+      required:
+        - email
+        - password
+        - providerName
+        - contactName
+    provider:
+      type: object
+      properties:
+        email:
+          type: string
+        providerName:
+          type: string
+        contactName:
+          type: string
+        address:
+          $ref: '#/components/schemas/address'
+        information:
+          $ref: '#/components/schemas/providerInformation'
+          
+    providerInformation:
+      type: object
+      properties:
+        adress1:
+          type: string
+        address2:
+          type: string
+    
+    product:
+      type: object
+      properties:
+        productName:
+          type: string
+        productType:
+          type: string
+        price:
+          type: string
+        description :
+          type: string
+      required:
+        - productName
+        - productType
+        - price
+        - description
+    redeem_request:
+      type: object
+      properties:
+        code:
+          description: Active tour code
+          type: string
+        method:
+          description: set 'provider_scan' or 'provider_code'
+          type: string
+      required:
+        - code
+        - method
+    user_message_answer:
+      type: object
+      properties:
+        id:
+          description: message id
+          type: string
+        answer_type:
+          description: type of answer relate to the type of message
+          type: string
+        answer_value:
+          description: set 'provider_scan' or 'provider_code'
+          type: string
+      required:
+        - id
+        - answer_type
     error:
       type: object
       properties:
@@ -717,5 +859,3 @@ components:
           format: int64
         name:
           type: string
-      xml:
-        name: Category
