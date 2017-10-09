@@ -128,7 +128,7 @@ paths:
         '405':
           description: Invalid input
   '/secured/customer/{id}/buy/suggestedtour/{tour_code}':
-    post:
+    put:
       tags:
         - Customer Actions
       summary: Assign the tour for the customer
@@ -372,8 +372,12 @@ paths:
           schema:
             type: string
       responses:
-        default:
+        '200':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/provider'
   '/secured/provider/{providerId}/address':
     post:
       tags:
@@ -603,18 +607,13 @@ paths:
           required: true
           schema:
             type: string
-        - name: code
-          in: query
-          description: Active tour code
-          required: true
-          schema:
-            type: string
-        - name: method
-          in: query
-          description: set 'provider_scan' or 'provider_code'
-          required: true
-          schema:
-            type: string
+      requestBody:
+        description: Info about the provider redeem
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/redeem_request'
       responses:
         default:
           description: successful operation
@@ -786,6 +785,7 @@ components:
         - password
         - providerName
         - contactName
+
     provider:
       type: object
       properties:
@@ -828,14 +828,20 @@ components:
       type: object
       properties:
         code:
-          description: Active tour code
+          description: Active tour code of the customer
           type: string
-        method:
+        redeemType:
           description: set 'provider_scan' or 'provider_code'
+          type: string
+          enum:
+            - provider_scan
+            - provider_code
+        requestTime:
+          description: The time the request was sent
           type: string
       required:
         - code
-        - method
+        - redeemType
     user_message_answer:
       type: object
       properties:
