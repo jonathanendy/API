@@ -174,8 +174,11 @@ paths:
           schema:
             type: string
       responses:
-        '405':
-          description: Invalid input
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  
   '/secured/customer/{id}/redeem':
     post:
       tags:
@@ -200,7 +203,70 @@ paths:
       responses:
         default:
           description: successful operation
-  '/secured/customer/{id}/messages/system/{status}':
+  
+  '/secured/customer/{id}/profile_pic_multipart':
+    post:
+      tags:
+        - Customer Actions
+      summary: Get tour info the active tour
+      description: get the customer profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  
+  '/secured/customer/{id}/profile_pic':
+    get:
+      tags:
+        - Customer Actions
+      summary: Get tour info the active tour
+      description: update the customer profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+    post:
+      tags:
+        - Customer Actions
+      summary: Get tour info the active tour
+      description: get the customer profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File structure with base64 property
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/file_base64'
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  
+  '/secured/customer/{id}/messages/system/new':
     get:
       tags:
         - Customer Messages
@@ -216,12 +282,32 @@ paths:
           required: true
           schema:
             type: string
-        - name: status
+      responses:
+        '405':
+          description: Invalid input
+  '/secured/customer/{id}/messages/system/acknowledge':
+    put:
+      tags:
+        - Customer Messages
+      summary: Get customer messages by status
+      description: >-
+        The customer is already registered in the system, use after the buying
+        confirmation
+      operationId: getCustomerMessages
+      parameters:
+        - name: id
           in: path
-          description: The messages status
+          description: the database id of the customer
           required: true
           schema:
             type: string
+      requestBody:
+        description: Info about the purch
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/redeem_request'
       responses:
         '405':
           description: Invalid input
@@ -261,25 +347,6 @@ paths:
         - Tours Generator
       summary: Generate tours by demand
       description: Generate tours by demand
-      parameters:
-        - name: userID
-          in: query
-          description: The user id
-          required: false
-          schema:
-            type: string
-        - name: location
-          in: query
-          description: GEO location for the request  34.123;23.22344
-          required: true
-          schema:
-            type: string
-        - name: requestTime
-          in: query
-          description: Current time
-          required: true
-          schema:
-            type: number
       requestBody:
         description: Info about the provider location
         required: true
@@ -400,8 +467,12 @@ paths:
             schema:
               $ref: '#/components/schemas/address'
       responses:
-        default:
+        '200':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/provider'
   '/secured/provider/{providerId}/information':
     post:
       tags:
@@ -416,33 +487,20 @@ paths:
           required: true
           schema:
             type: string
-        - name: productName
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: productType
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: price
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: description
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
+      requestBody:
+        description: Information about the provider
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/providerInformation'
       responses:
-        default:
+        '200':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/provider'
   '/secured/provider/{providerId}/bank-details':
     post:
       tags:
@@ -457,33 +515,20 @@ paths:
           required: true
           schema:
             type: string
-        - name: productName
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: productType
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: price
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: description
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
+      requestBody:
+        description: Information about the provider
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/providerInformation'
       responses:
-        default:
+        '200':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/provider'
   '/secured/provider/{providerId}/product':
     get:
       tags:
@@ -514,12 +559,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: productName
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
       requestBody:
         description: Info about the provider location
         required: true
@@ -544,30 +583,19 @@ paths:
           required: true
           schema:
             type: string
-        - name: productName
-          in: query
-          description: The id of the provider
+        - name: product_id
+          in: path
+          description: The id of the product to delete
           required: true
           schema:
             type: string
-        - name: productType
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: price
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: description
-          in: query
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
+      requestBody:
+        description: Info about the provider location
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/product'
       responses:
         default:
           description: successful operation
@@ -630,6 +658,19 @@ paths:
 #    name: api_key
 #    in: header
 components:
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
     login_request:
       type: object
@@ -842,6 +883,27 @@ components:
       required:
         - code
         - redeemType
+    
+    user_message:
+      type: object
+      properties:
+        id:
+          description: message id
+          type: string
+        status:
+          description: type of answer relate to the type of message
+          type: string
+        customerID:
+          description: the user id of the message
+          type: string
+        messageType:
+          description: the user id of the message
+          type: string
+          enum: [eng, esp]
+        showSuspension:
+          description: time to delay the message
+          type: number
+      
     user_message_answer:
       type: object
       properties:
@@ -857,10 +919,25 @@ components:
       required:
         - id
         - answer_type
+    
     error:
       type: object
       properties:
         id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    file_base64:
+      type: object
+      properties:
+        base64:
+          description: File representation in base64
+          type: string
+        hight:
+          type: integer
+          format: int64
+        width:
           type: integer
           format: int64
         name:
