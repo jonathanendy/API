@@ -237,6 +237,8 @@ paths:
           schema:
             type: string
       responses:
+        '200':
+          $ref: '#/components/responses/ByteImage'   # <-----
         '401':
           $ref: '#/components/responses/Unauthorized'   # <-----
         '404':
@@ -244,7 +246,7 @@ paths:
     post:
       tags:
         - Customer Actions
-      summary: Get tour info the active tour
+      summary: get the customer profile picture
       description: get the customer profile picture
       parameters:
         - name: id
@@ -266,6 +268,59 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'       # <-----
   
+  '/secured/customer/{id}/provider/{provider_id}/picture':
+    get:
+      tags:
+        - Customer Actions
+      summary: Get tour info the active tour
+      description: update the customer profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+        - name: provider_id
+          in: path
+          description: the database id of the provider
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ByteImage'   # <-----
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  '/secured/customer/{id}/product/{product_id}/picture':
+    get:
+      tags:
+        - Customer Actions
+      summary: Get tour info the active tour
+      description: update the customer profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+        - name: product_id
+          in: path
+          description: the database id of the product
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ByteImage'   # <-----
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+        
   '/secured/customer/{id}/messages/system/new':
     get:
       tags:
@@ -341,7 +396,57 @@ paths:
       responses:
         '405':
           description: Invalid input
-  /tours/generator:
+  '/secured/customer/{id}/upload/picture':
+    post:
+      tags:
+        - Customer Messages
+      summary: Get tour info the active tour
+      description: update the customer profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File structure with base64 property
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/file_base64'
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  '/secured/customer/{id}/upload/picture/{pic_name}':
+    get:
+      tags:
+        - Customer Messages
+      summary: get the customer profile picture
+      description: get the customer profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+        - name: pic_name
+          in: path
+          description: The name picture was stored
+          required: true
+          schema:
+            type: string
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  
+  '/tours/generator':
     post:
       tags:
         - Tours Generator
@@ -357,6 +462,7 @@ paths:
       responses:
         '200':
           description: successful operation
+  
   '/tours/generator/list/{list_token}':
     get:
       tags:
@@ -521,7 +627,55 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/providerInformation'
+              $ref: '#/components/schemas/providerBankDetails'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/provider'
+  '/secured/provider/{providerId}/picture':
+    get:
+      tags:
+        - Provider
+      summary: Get the provider picture
+      description: The picture of the provider for the provider request
+      operationId: updateBankDetails
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ByteImage'   # <-----
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+    post:
+      tags:
+        - Provider
+      summary: Update or set provider picture
+      description: Update or set provider picture
+      operationId: updateBankDetails
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File structure with base64 property
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/file_base64'
       responses:
         '200':
           description: successful operation
@@ -621,6 +775,66 @@ paths:
       responses:
         default:
           description: successful operation
+  '/secured/provider/{providerId}/product/{product_id}/picture':
+    get:
+      tags:
+        - Product
+      summary: Get the product picture
+      description: The picture of the provider for the provider request
+      operationId: updateBankDetails
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: product_id
+          in: path
+          description: The id of the product to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ByteImage'   # <-----
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+    post:
+      tags:
+        - Product
+      summary: Update or set product picture
+      description: Update or set provider picture
+      operationId: updateBankDetails
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+        - name: product_id
+          in: path
+          description: The id of the product to delete
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File structure with base64 property
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/file_base64'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/provider'
   '/secured/provider/{providerId}/redeem':
     post:
       tags:
@@ -659,6 +873,13 @@ paths:
 #    in: header
 components:
   responses:
+    ByteImage:
+      description: Image
+      content:
+        image/png:
+          schema:
+            type: string
+            format: binary
     NotFound:
       description: The specified resource was not found
       content:
@@ -671,6 +892,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+    
   schemas:
     login_request:
       type: object
@@ -840,15 +1062,31 @@ components:
           $ref: '#/components/schemas/address'
         information:
           $ref: '#/components/schemas/providerInformation'
+        bankDetails:
+          $ref: '#/components/schemas/providerBankDetails'
           
     providerInformation:
       type: object
       properties:
-        adress1:
+        typesOfProductDetail:
           type: string
-        address2:
+        placeInfo:
           type: string
     
+    providerBankDetails:
+      type: object
+      properties:
+        beneficiaryName:
+          type: string
+        beneficiaryAddress:
+          type: string
+        bankName:
+          type: string
+        branchNumber:
+          type: string
+        accountNumber:
+          type: string
+        
     product:
       type: object
       properties:
