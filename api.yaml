@@ -635,6 +635,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/provider'
+  '/secured/provider/{providerId}/active-time':
+    post:
+      tags:
+        - Provider
+      summary: Create new provider product
+      description: Add new product for the provider
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Array of all the days of the week and the time the provider active
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/providerActiveTime'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/provider'
   '/secured/provider/{providerId}/picture':
     get:
       tags:
@@ -1064,6 +1091,8 @@ components:
           $ref: '#/components/schemas/providerInformation'
         bankDetails:
           $ref: '#/components/schemas/providerBankDetails'
+        activeTime:
+          $ref: '#/components/schemas/providerActiveTime'
           
     providerInformation:
       type: object
@@ -1085,6 +1114,30 @@ components:
         branchNumber:
           type: string
         accountNumber:
+          type: string
+          
+    providerActiveTime:
+      type: object
+      properties:
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/providerActiveTimeDay'
+    
+    providerActiveTimeDay:
+      type: object
+      properties:
+        day:
+          type: string
+          enum: [sunday, monday, tuesday, wednesday, thursday, friday, saturday]
+        startTime:
+          type: string
+        endTime:
+          type: string
+        status:
+          type: string
+          enum: [open, close]
+        label:
           type: string
         
     product:
