@@ -366,23 +366,16 @@ paths:
       responses:
         '405':
           description: Invalid input
-  '/secured/customer/{id}/messages/system/answer/{message_id}':
+  '/secured/customer/{id}/messages/system/answer':
     post:
       tags:
         - Customer Messages
       summary: Get customer messages by status
       description: Answer to cusromer message
-      operationId: ansnwerMessage
       parameters:
         - name: id
           in: path
           description: the database id of the customer
-          required: true
-          schema:
-            type: string
-        - name: message_id
-          in: path
-          description: The messages status
           required: true
           schema:
             type: string
@@ -392,7 +385,11 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/user_message_answer'
+              oneOf:
+                - $ref: '#/components/schemas/user_message_answer_yesno'
+                - $ref: '#/components/schemas/user_message_answer_text'
+              discriminator:
+                propertyName: type
       responses:
         '405':
           description: Invalid input
@@ -967,11 +964,29 @@ components:
     CustomerTourPreferences:
       type: object
       properties:
-        id:
-          type: string
         walker:
           type: integer
-          format: int32
+          minimum: 1
+          maximum: 5
+        music:
+          type: integer
+          minimum: 1
+          maximum: 5
+        romantic:
+          type: integer
+          minimum: 1
+          maximum: 5
+        adventurer:
+          type: integer
+          minimum: 1
+          maximum: 5
+        food:
+          type: string
+          enum: [vigan, vegetarian, all]
+        alcohol:
+          type: string
+          enum: [none, mild, full]
+    
     CustomerDetails:
       type: object
       properties:
@@ -997,8 +1012,10 @@ components:
         location:
           $ref: '#/components/schemas/location'
         requestTime:
-          type: integer
-          format: int32
+          type: string
+          format: date-time
+        preferences:
+          $ref: '#/components/schemas/CustomerTourPreferences'
     location:
       type: object
       properties:
@@ -1163,18 +1180,30 @@ components:
           description: Active tour code of the customer
           type: string
         redeemType:
-          description: set 'provider_scan' or 'provider_code'
+          description: set 'provider_scan', 'provider_code', 'user_manual'
           type: string
           enum:
             - provider_scan
             - provider_code
+            - user_manual
         requestTime:
           description: The time the request was sent
           type: string
+        userReason:
+          description: only when 'user_manual'
+          type: string
+          enum:
+            - provider_request
+            - provider_closed
+            - provider_not_found
+            - technical_issues
+            - other
       required:
         - code
         - redeemType
+        - userReason
     
+    # All message types
     user_message:
       type: object
       properties:
@@ -1187,29 +1216,46 @@ components:
         customerID:
           description: the user id of the message
           type: string
-        messageType:
+        type:
           description: the user id of the message
           type: string
           enum: [eng, esp]
         showSuspension:
           description: time to delay the message
           type: number
-      
-    user_message_answer:
+    
+    
+    # All answer types
+    user_message_answer_yesno:
       type: object
+      required:
+        - type
+        - messageID
       properties:
-        id:
+        messageID:
           description: message id
           type: string
-        answer_type:
+        type:
+          description: yesno
+          type: string
+        text:
           description: type of answer relate to the type of message
           type: string
-        answer_value:
-          description: set 'provider_scan' or 'provider_code'
-          type: string
+    user_message_answer_text:
+      type: object
       required:
-        - id
-        - answer_type
+        - type
+        - messageID
+      properties:
+        messageID:
+          description: message id
+          type: string
+        type:
+          description: text
+          type: string
+        text:
+          description: type of answer relate to the type of message
+          type: string
     
     error:
       type: object
