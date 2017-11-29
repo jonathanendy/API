@@ -362,7 +362,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/redeem_request'
+              $ref: '#/components/schemas/message_acknowledge'
       responses:
         '405':
           description: Invalid input
@@ -1203,6 +1203,19 @@ components:
         - redeemType
         - userReason
     
+    message_acknowledge:
+      type: object
+      properties:
+        time:
+          type: string
+        messages_ids:
+          description: list of message ids
+          type: array
+          items:
+            type: string
+          example: [5a1f34f38de25598b44311a1, 5a1f354e8de25598b44311a3, 5a1f35578de25598b44311a4]
+        
+        
     # All message types
     user_message:
       type: object
