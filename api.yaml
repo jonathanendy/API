@@ -883,6 +883,26 @@ paths:
       responses:
         default:
           description: successful operation
+  '/secured/provider/{providerId}/redeem/history':
+    get:
+      tags:
+        - Provider Redeem
+      summary: List of all the reedemed coupons
+      description: List of all the reedemed coupons
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/providerPrevReedem'
 # securityDefinitions:
 #  petstore_auth:
 #    type: oauth2
@@ -1203,6 +1223,16 @@ components:
         - redeemType
         - userReason
     
+    providerPrevReedem:
+      type: object
+      properties:
+        redeemPrice:
+          type: number
+          format: float
+        redeemTime:
+          type: string
+          format: date-time
+          
     message_acknowledge:
       type: object
       properties:
