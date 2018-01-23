@@ -459,6 +459,24 @@ paths:
       responses:
         '200':
           description: successful operation
+  '/tours/generator/questions':
+    get:
+      tags:
+        - Tours Generator
+      summary: The questions prefrences for the tour
+      description: return the questens for the prefrences
+      requestBody:
+        description: return array of prefrecncesQuestion
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/prefrecncesQuestion'
+      responses:
+        '200':
+          description: successful operation
   
   '/tours/generator/list/{list_token}':
     get:
@@ -490,6 +508,24 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+          description: successful operation
+  '/tours/generator/terms/{suggested_tour_code}':
+    get:
+      tags:
+        - Tours Generator
+      summary: Return list of strings contain the tems for the tour
+      description: Return list of strings contain the tems for the tour
+      parameters:
+        - name: suggested_tour_code
+          in: path
+          description: the code of the suggested tours that the customer choose
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         '200':
           description: successful operation
@@ -1045,6 +1081,28 @@ components:
         y:
           type: number
           format: dubble
+          
+    prefrecncesQuestion:
+      type: object
+      properties:
+        prefrenceVar:
+          type: string
+        questionText:
+          type: string
+        valueType:
+          type: string
+          enum: [number, string]
+        scaleSize:
+          type: integer
+          format: int64
+        minText:
+          type: string
+        maxText:
+          type: string
+        constValues:
+          type: array
+          items:
+            type: string
     
     address:
       type: object
