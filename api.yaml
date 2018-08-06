@@ -37,7 +37,6 @@ paths:
               $ref: '#/components/schemas/login_request'
       responses:
         '200':
-          description: OK
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
@@ -75,7 +74,6 @@ paths:
               $ref: '#/components/schemas/login_request'
       responses:
         '200':
-          description: OK
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
@@ -99,7 +97,6 @@ paths:
               - token
       responses:
         '200':
-          description: OK
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
@@ -123,7 +120,6 @@ paths:
               - token
       responses:
         '200':
-          description: OK
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
@@ -460,7 +456,7 @@ paths:
         '200':
           description: successful operation
   '/tours/generator/questions':
-    get:
+    post:
       tags:
         - Tours Generator
       summary: The questions prefrences for the tour
@@ -493,7 +489,6 @@ paths:
             type: string
       responses:
         '200':
-          description: successful operation
           $ref: '#/components/schemas/suggested_tour'
   '/tours/generator/join/{active_tour_code}':
     get:
@@ -760,6 +755,30 @@ paths:
       responses:
         default:
           description: successful operation
+  '/secured/provider/{providerId}/product/classifications':
+    get:
+      tags:
+        - Product
+      summary: Get products classification options
+      description: Get products classification options
+      operationId: getProductClassifications
+      parameters:
+        - name: providerId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of Classification Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/productClassificationCategory'
+        
     post:
       tags:
         - Product
@@ -1251,6 +1270,57 @@ components:
         - productType
         - price
         - description
+        
+    productClassification:
+      type: object
+      properties:
+        name:
+          type: string
+        text:
+          type: string
+        order:
+          type: integer
+        categories:
+          description: list of categories
+          type: array
+          items:
+            $ref: '#/components/schemas/productClassificationCategory'
+      required:
+        - name
+        - text
+        - order
+    productClassificationCategory:
+      type: object
+      properties:
+        name:
+          type: string
+        text:
+          type: string
+        order:
+          type: integer
+        subCategories:
+          description: list of sub categories
+          type: array
+          items:
+            $ref: '#/components/schemas/productClassificationSubCategory'
+      required:
+        - name
+        - text
+        - order
+    productClassificationSubCategory:
+      type: object
+      properties:
+        name:
+          type: string
+        text:
+          type: string
+        order:
+          type: integer
+      required:
+        - name
+        - text
+        - order
+        
     redeem_request:
       type: object
       properties:
