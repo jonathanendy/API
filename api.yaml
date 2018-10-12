@@ -123,7 +123,7 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/secured/customer/{id}/buy/suggestedtour/{tour_code}':
+  '/secured/customer/{id}/buy/suggestedtour':
     put:
       tags:
         - Customer Actions
@@ -139,19 +139,13 @@ paths:
           required: true
           schema:
             type: string
-        - name: tour_code
-          in: path
-          description: The unieqe code of that tour
-          required: true
-          schema:
-            type: string
       requestBody:
         description: Info about the purch
         required: true
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/buy_tour'
+              $ref: '#/components/schemas/buy_tour_request'
       responses:
         '405':
           description: Invalid input
@@ -490,12 +484,13 @@ paths:
       responses:
         '200':
           $ref: '#/components/schemas/suggested_tour'
+          
   '/tours/generator/join/{active_tour_code}':
     get:
       tags:
         - Tours Generator
-      summary: Get the generated list for the request
-      description: Get the generated list for the request
+      summary: Join friend tour by the active tour id
+      description: Get the generated list of only one tour
       parameters:
         - name: active_tour_code
           in: path
@@ -505,7 +500,27 @@ paths:
             type: string
       responses:
         '200':
-          description: successful operation
+          $ref: '#/components/schemas/suggested_tour'
+ 
+  '/tours/generator/promotion':
+    post:
+      tags:
+        - Tours Generator
+      summary: Apply promotion code
+      description: return the new value for the tour
+      requestBody:
+        description: The current value of the tour
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/promotion_apply'
+      responses:
+        '200':
+          $ref: '#/components/schemas/new_price'
+  
   '/tours/generator/terms/{suggested_tour_code}':
     get:
       tags:
@@ -1122,6 +1137,34 @@ components:
           type: array
           items:
             type: string
+            
+    promotion_apply:
+      type: object
+      properties:
+        promotionCode:
+          type: string
+        price:
+          type: number
+        couponCount:
+          type: integer
+          format: int64
+        customerId:
+          type: string
+      required:
+        - promotionCode
+        - price
+        - couponCount
+    
+    new_price:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [apply, not_found, error]
+        message:
+          type: string
+        newPrice:
+          type: number
     
     address:
       type: object
@@ -1143,13 +1186,25 @@ components:
         location:
           $ref: '#/components/schemas/location'
     
-    buy_tour:
+    buy_tour_request:
       type: object
       properties:
-        confirmation_id:
+        suggetedTourCode:
           type: string
-        time:
+        confirmationId:
           type: string
+        purchaseType:
+          type: string
+          enum: [paypal, card]
+        purchaseTime:
+          type: string
+        promotionCode:
+          type: string
+      required:
+        - suggetedTourCode
+        - confirmationId
+        - purchaseType
+        - purchaseTime
           
     suggested_tour:
       type: object
