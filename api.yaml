@@ -193,7 +193,76 @@ paths:
       responses:
         default:
           description: successful operation
-  
+  '/secured/customer/{id}':
+    post:
+      tags:
+        - Customer Actions
+      summary: Update the customer immediate data
+      description: Update the customer immediate data
+      parameters:
+        - name: id
+          in: path
+          description: The id of the customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The info to update the customer data
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/customer_update'
+      responses:
+        default:
+          description: successful operation
+  '/secured/customer/{id}/details':
+    post:
+      tags:
+        - Customer Actions
+      summary: Update the customer detailed data
+      description: Set the customer tour as used for that provider
+      parameters:
+        - name: id
+          in: path
+          description: The id of the customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The info to update the customer data
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/customer_details'
+      responses:
+        default:
+          description: successful operation
+  '/secured/customer/{id}/preferences':
+    post:
+      tags:
+        - Customer Actions
+      summary: Use the tour code to redeem the tour
+      description: Set the customer tour as used for that provider
+      parameters:
+        - name: id
+          in: path
+          description: The id of the customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The info to update the customer data
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/customer_update'
+      responses:
+        default:
+          description: successful operation
+          
   '/secured/customer/{id}/profile_pic_multipart':
     post:
       tags:
@@ -456,14 +525,14 @@ paths:
       summary: The questions prefrences for the tour
       description: return the questens for the prefrences
       requestBody:
-        description: return array of prefrecncesQuestion
+        description: return array of preferecncesQuestion
         required: true
         content:
           'application/json':
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/prefrecncesQuestion'
+                $ref: '#/components/schemas/preferenceQuestion'
       responses:
         '200':
           description: successful operation
@@ -1041,7 +1110,11 @@ components:
           type: string
         email:
           type: string
-        systemLanguage:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        appLanguage:
           type: string
           enum: [eng, esp]
         score:
@@ -1051,6 +1124,36 @@ components:
           $ref: '#/components/schemas/CustomerTourPreferences'
         details:
           $ref: '#/components/schemas/CustomerDetails'
+          
+    customer_update:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        pushNotificationLevel:
+          type: integer
+          format: int32
+        appLanguage:
+          type: string
+          enum: [eng, esp]
+    
+    customer_details:
+      type: object
+      properties:
+        homeCountry:
+          type: string
+        String:
+          type: string
+          enum: [male, female]
+        age:
+          type: integer
+          format: int32
+        birthDate:
+          type: string
+          format: date-time
+          
     CustomerTourPreferences:
       type: object
       properties:
@@ -1116,10 +1219,10 @@ components:
           type: number
           format: dubble
           
-    prefrecncesQuestion:
+    preferenceQuestion:
       type: object
       properties:
-        prefrenceVar:
+        preferenceVar:
           type: string
         questionText:
           type: string
