@@ -77,6 +77,30 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
+  '/register/customer/refresh':
+    post:
+      tags:
+        - Customer Register
+      summary: refresh the user token
+      operationId: refresh token
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  description: refresh key of the customer
+                  type: string
+                email:
+                  description: user email
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/schemas/login_response'
+        '405':
+          description: Invalid input
   '/register/customer/facebook/token':
     post:
       tags:
@@ -553,7 +577,26 @@ paths:
       responses:
         '200':
           $ref: '#/components/schemas/suggested_tour'
-          
+  
+  '/tours/generator/picture/{name}':
+    get:
+      tags:
+        - Tours Generator
+      summary: Get the generated list for the request
+      description: Get the generated list for the request
+      parameters:
+        - name: name
+          in: path
+          description: The picture name to be returned
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ByteImage'
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  
   '/tours/generator/join/{active_tour_code}':
     get:
       tags:
@@ -1053,7 +1096,7 @@ paths:
 #  api_key:
 #    type: apiKey
 #    name: api_key
-#    in: header
+#    in: header 
 components:
   responses:
     ByteImage:
