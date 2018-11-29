@@ -193,6 +193,25 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'       # <-----
   
+  '/secured/customer/{id}/tours/prev':
+    get:
+      tags:
+        - Customer Actions
+      summary: Get tour info the history of tours
+      description: Get tour info the history of tours
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  
   '/secured/customer/{id}/redeem':
     post:
       tags:
