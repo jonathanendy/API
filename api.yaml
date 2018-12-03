@@ -1146,6 +1146,8 @@ components:
           type: string
         password:
           type: string
+        pushNotificationToken:
+          type: string
     
     login_response:
       type: object
@@ -1193,6 +1195,8 @@ components:
         firstName:
           type: string
         lastName:
+          type: string
+        pushNotificationToken:
           type: string
         pushNotificationLevel:
           type: integer
