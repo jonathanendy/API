@@ -1,31 +1,23 @@
 openapi: "3.0.0"
 info:
-  version: 1.0.0
+  version: 0.0.1
   title: CardIt
 servers: 
   - url: ''
 tags:
-  - name: Customer Register
+  - name: User Login
     description: create and manage customers signups
-  - name: Customer Actions
+  - name: User Actions
     description: create and manage customers signups
-  - name: Tours Generator
-    description: Create and get new tours
-  - name: Customer Messages
-    description: Get the customer messsages
-  - name: Provider Register
+  - name: Business Login
     description: create and manage providers signups
-  - name: Provider
+  - name: Business Actions
     description: manage provider data
-  - name: Product
-    description: create and manage Products
-  - name: Provider Redeem
-    description: Redeem the customer's tour
 paths:
-  '/register/customer/email/login':
+  '/user/login/email':
     post:
       tags:
-        - Customer Register
+        - User Login
       summary: Login by Email
       description: ''
       operationId: login
@@ -40,10 +32,10 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/register/customer/email/check':
+  '/user/login/email/check':
     post:
       tags:
-        - Customer Register
+        - User Login
       summary: Check Email Address
       operationId: emailCheck
       requestBody:
@@ -60,10 +52,10 @@ paths:
       responses:
         '405':
           description: Invalid input
-  '/register/customer/email/signup':
+  '/user/login/email/signup':
     post:
       tags:
-        - Customer Register
+        - User Login
       summary: Signup by Email
       operationId: emailSignup
       requestBody:
@@ -77,10 +69,10 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/register/customer/refresh':
+  '/user/login/refresh':
     post:
       tags:
-        - Customer Register
+        - User Login
       summary: refresh the user token
       operationId: refresh token
       requestBody:
@@ -101,10 +93,10 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/register/customer/facebook/token':
+  '/user/login/facebook/token':
     post:
       tags:
-        - Customer Register
+        - User Login
       summary: Login or register using a facebook token
       description: 'Use scope=public_profile,email in the requset'
       operationId: loginFacebookToken
@@ -124,10 +116,10 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/register/customer/google/token':
+  '/user/login/google/token':
     post:
       tags:
-        - Customer Register
+        - User Login
       summary: Login or register using a Google token
       description: 'Use scope=profile,email in the requset'
       operationId: loginGoogleToken
@@ -147,213 +139,43 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/secured/customer/{id}/buy/suggestedtour':
+  
+  # -----------------------
+  # User Actions
+  # -----------------------
+  '/user/{id}':
     put:
       tags:
-        - Customer Actions
-      summary: Assign the tour for the customer
-      description: >-
-        The customer is already registered in the system, use after the buying
-        confirmation
-      operationId: buySuggestedTourByCustomer
+        - User Actions
+      summary: Updates the user data
+      description: Updates the user data
       parameters:
         - name: id
           in: path
-          description: the database id of the customer
+          description: The id of the user
           required: true
           schema:
             type: string
       requestBody:
-        description: Info about the purch
+        description: The user object with the relevant data to update
         required: true
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/buy_tour_request'
-      responses:
-        '405':
-          description: Invalid input
-  '/secured/customer/{id}/tours/active':
-    get:
-      tags:
-        - Customer Actions
-      summary: Get tour info the active tour
-      description: get
-      operationId: getActiveTour
-      parameters:
-        - name: id
-          in: path
-          description: the database id of the customer
-          required: true
-          schema:
-            type: string
-      responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-  
-  '/secured/customer/{id}/tours/prev':
-    get:
-      tags:
-        - Customer Actions
-      summary: Get tour info the history of tours
-      description: Get tour info the history of tours
-      parameters:
-        - name: id
-          in: path
-          description: the database id of the customer
-          required: true
-          schema:
-            type: string
-      responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-  
-  '/secured/customer/{id}/redeem':
-    post:
-      tags:
-        - Customer Actions
-      summary: Use the tour code to redeem the tour
-      description: Set the customer tour as used for that provider
-      operationId: redeemTourCustomer
-      parameters:
-        - name: id
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Info about the purch
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/redeem_request'
+              $ref: '#/components/schemas/user'
       responses:
         default:
           description: successful operation
-  '/secured/customer/{id}':
+  '/user/{id}/profile_pic':
     post:
       tags:
-        - Customer Actions
-      summary: Update the customer immediate data
-      description: Update the customer immediate data
+        - User Actions
+      summary: Updates the user profile picture
+      description: Updates the user profile picture
       parameters:
         - name: id
           in: path
-          description: The id of the customer
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The info to update the customer data
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/customer_update'
-      responses:
-        default:
-          description: successful operation
-  '/secured/customer/{id}/details':
-    post:
-      tags:
-        - Customer Actions
-      summary: Update the customer detailed data
-      description: Set the customer tour as used for that provider
-      parameters:
-        - name: id
-          in: path
-          description: The id of the customer
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The info to update the customer data
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/customer_details'
-      responses:
-        default:
-          description: successful operation
-  '/secured/customer/{id}/preferences':
-    post:
-      tags:
-        - Customer Actions
-      summary: Use the tour code to redeem the tour
-      description: Set the customer tour as used for that provider
-      parameters:
-        - name: id
-          in: path
-          description: The id of the customer
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The info to update the customer data
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/customer_update'
-      responses:
-        default:
-          description: successful operation
-          
-  '/secured/customer/{id}/profile_pic_multipart':
-    post:
-      tags:
-        - Customer Actions
-      summary: Get tour info the active tour
-      description: get the customer profile picture
-      parameters:
-        - name: id
-          in: path
-          description: the database id of the customer
-          required: true
-          schema:
-            type: string
-      responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-  
-  '/secured/customer/{id}/profile_pic':
-    get:
-      tags:
-        - Customer Actions
-      summary: Get tour info the active tour
-      description: update the customer profile picture
-      parameters:
-        - name: id
-          in: path
-          description: the database id of the customer
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/responses/ByteImage'   # <-----
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-    post:
-      tags:
-        - Customer Actions
-      summary: get the customer profile picture
-      description: get the customer profile picture
-      parameters:
-        - name: id
-          in: path
-          description: the database id of the customer
+          description: the database id of the user
           required: true
           schema:
             type: string
@@ -369,61 +191,115 @@ paths:
           $ref: '#/components/responses/Unauthorized'   # <-----
         '404':
           $ref: '#/components/responses/NotFound'       # <-----
+  '/user/{id}/profile_pic_multipart':
+    post:
+      tags:
+        - User Actions
+      summary: Updates the user profile picture
+      description: Updates the user profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+          
+  '/user/{id}/benefit/offer':
+    get:
+      tags:
+        - User Actions
+      summary: List all the benefits offered to the user
+      description: List all the benefits offered to the user
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user
+          required: true
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: The current location of the customer
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_user_offer'
+  '/user/{id}/benefit/offer/buy':
+    post:
+      tags:
+        - User Actions
+      summary: Buy benefit offer for user
+      description: Buy benefit offer for user
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Info about the purch
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/buy_benefit_offer_request'
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_purchased'
+  '/user/{id}/benefit/purchased':
+    get:
+      tags:
+        - User Actions
+      summary: List all the benefits the user purchased by status
+      description: List all the benefits the user purchased by status
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: the status of the purchased benefit to list
+          required: true
+          schema:
+            $ref: '#/components/schemas/benefit_purchased_status'
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_purchased'
   
-  '/secured/customer/{id}/provider/{provider_id}/picture':
-    get:
-      tags:
-        - Customer Actions
-      summary: Get tour info the active tour
-      description: update the customer profile picture
-      parameters:
-        - name: id
-          in: path
-          description: the database id of the customer
-          required: true
-          schema:
-            type: string
-        - name: provider_id
-          in: path
-          description: the database id of the provider
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/responses/ByteImage'   # <-----
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-  '/secured/customer/{id}/product/{product_id}/picture':
-    get:
-      tags:
-        - Customer Actions
-      summary: Get tour info the active tour
-      description: update the customer profile picture
-      parameters:
-        - name: id
-          in: path
-          description: the database id of the customer
-          required: true
-          schema:
-            type: string
-        - name: product_id
-          in: path
-          description: the database id of the product
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/responses/ByteImage'   # <-----
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-        
-  '/secured/customer/{id}/messages/system/new':
+  #
+  # User Messages
+  #
+  '/user/{id}/messages/system/new':
     get:
       tags:
         - Customer Messages
@@ -442,7 +318,7 @@ paths:
       responses:
         '405':
           description: Invalid input
-  '/secured/customer/{id}/messages/system/acknowledge':
+  '/user/{id}/messages/system/acknowledge':
     put:
       tags:
         - Customer Messages
@@ -468,7 +344,7 @@ paths:
       responses:
         '405':
           description: Invalid input
-  '/secured/customer/{id}/messages/system/answer':
+  '/user/{id}/messages/system/answer':
     post:
       tags:
         - Customer Messages
@@ -495,205 +371,17 @@ paths:
       responses:
         '405':
           description: Invalid input
-  '/secured/customer/{id}/upload/picture':
+  
+  #
+  # Business login
+  #
+  '/business/login/email':
     post:
       tags:
-        - Customer Messages
-      summary: Get tour info the active tour
-      description: update the customer profile picture
-      parameters:
-        - name: id
-          in: path
-          description: the database id of the customer
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: File structure with base64 property
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/file_base64'
-      responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-  '/secured/customer/{id}/upload/picture/{pic_name}':
-    get:
-      tags:
-        - Customer Messages
-      summary: get the customer profile picture
-      description: get the customer profile picture
-      parameters:
-        - name: id
-          in: path
-          description: the database id of the customer
-          required: true
-          schema:
-            type: string
-        - name: pic_name
-          in: path
-          description: The name picture was stored
-          required: true
-          schema:
-            type: string
-      responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-  
-  '/tours/generator':
-    post:
-      tags:
-        - Tours Generator
-      summary: Generate tours by demand
-      description: Generate tours by demand
-      requestBody:
-        description: Info about the provider location
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/tourRequest'
-      responses:
-        '200':
-          description: successful operation
-  '/tours/generator/questions':
-    post:
-      tags:
-        - Tours Generator
-      summary: The questions prefrences for the tour
-      description: return the questens for the prefrences
-      requestBody:
-        description: return array of preferecncesQuestion
-        required: true
-        content:
-          'application/json':
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/preferenceQuestion'
-      responses:
-        '200':
-          description: successful operation
-  
-  '/tours/generator/list/{list_token}':
-    get:
-      tags:
-        - Tours Generator
-      summary: Get the generated list for the request
-      description: Get the generated list for the request
-      parameters:
-        - name: list_token
-          in: path
-          description: The token recieved when generate requested
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/schemas/suggested_tour'
-  
-  '/tours/generator/picture/{name}':
-    get:
-      tags:
-        - Tours Generator
-      summary: Get the generated list for the request
-      description: Get the generated list for the request
-      parameters:
-        - name: name
-          in: path
-          description: The picture name to be returned
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/responses/ByteImage'
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-  
-  '/tours/generator/join/{active_tour_code}':
-    get:
-      tags:
-        - Tours Generator
-      summary: Join friend tour by the active tour id
-      description: Get the generated list of only one tour
-      parameters:
-        - name: active_tour_code
-          in: path
-          description: Tour Code from an active tour
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/schemas/suggested_tour'
- 
-  '/tours/generator/promotion':
-    post:
-      tags:
-        - Tours Generator
-      summary: Apply promotion code
-      description: return the new value for the tour
-      requestBody:
-        description: The current value of the tour
-        required: true
-        content:
-          'application/json':
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/promotion_apply'
-      responses:
-        '200':
-          $ref: '#/components/schemas/new_price'
-  
-  '/tours/generator/terms/{suggested_tour_code}':
-    get:
-      tags:
-        - Tours Generator
-      summary: Return list of strings contain the tems for the tour
-      description: Return list of strings contain the tems for the tour
-      parameters:
-        - name: suggested_tour_code
-          in: path
-          description: the code of the suggested tours that the customer choose
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        '200':
-          description: successful operation
-  '/register/provider/signup':
-    post:
-      tags:
-        - Provider Register
+        - Business Login
       summary: Signup new provider
       description: Create new provider in the system
       operationId: signupProvider
-      requestBody:
-        description: Info about the provider location
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/provider_signup'
-      responses:
-        '200':
-          description: successful operation
-  '/register/provider/login':
-    post:
-      tags:
-        - Provider Register
-      summary: Login existing provider
-      description: Return authentication for the provider
-      operationId: loginProvider
       requestBody:
         description: Info about the provider location
         required: true
@@ -704,15 +392,17 @@ paths:
       responses:
         '200':
           description: successful operation
-  '/secured/provider/{providerId}':
+  #
+  # Business Actions
+  #
+  '/business/{businessId}':
     get:
       tags:
-        - Provider
-      summary: Get all provider info
-      description: Add new product for the provider
-      operationId: getProvider
+        - Business Actions
+      summary: Get all business info
+      description: Get all business info
       parameters:
-        - name: providerId
+        - name: businessId
           in: path
           description: The id of the provider
           required: true
@@ -724,16 +414,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/provider'
-  '/secured/provider/{providerId}/address':
-    post:
+                $ref: '#/components/schemas/business'
+    put:
       tags:
-        - Provider
-      summary: Create new provider product
-      description: Add new product for the provider
-      operationId: updateProviderAddress
+        - Business Actions
+      summary: Update business info
+      description: Update business info
       parameters:
-        - name: providerId
+        - name: businessId
           in: path
           description: The id of the provider
           required: true
@@ -745,126 +433,23 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/address'
+              $ref: '#/components/schemas/business'
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/provider'
-  '/secured/provider/{providerId}/information':
+                $ref: '#/components/schemas/business'
+  '/business/{businessId}/picture':
     post:
       tags:
-        - Provider
-      summary: Create new provider product
-      description: Add new product for the provider
-      operationId: updateProviderInformation
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Information about the provider
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/providerInformation'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/provider'
-  '/secured/provider/{providerId}/bank-details':
-    post:
-      tags:
-        - Provider
-      summary: Create new provider product
-      description: Add new product for the provider
-      operationId: updateBankDetails
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Information about the provider
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/providerBankDetails'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/provider'
-  '/secured/provider/{providerId}/active-time':
-    post:
-      tags:
-        - Provider
-      summary: Create new provider product
-      description: Add new product for the provider
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Array of all the days of the week and the time the provider active
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/providerActiveTime'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/provider'
-  '/secured/provider/{providerId}/picture':
-    get:
-      tags:
-        - Provider
-      summary: Get the provider picture
-      description: The picture of the provider for the provider request
-      operationId: updateBankDetails
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/responses/ByteImage'   # <-----
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-    post:
-      tags:
-        - Provider
+        - Business Actions
       summary: Update or set provider picture
       description: Update or set provider picture
       operationId: updateBankDetails
       parameters:
-        - name: providerId
+        - name: businessId
           in: path
           description: The id of the provider
           required: true
@@ -880,36 +465,157 @@ paths:
       responses:
         '200':
           description: successful operation
+  '/business/{businessId}/benefit/offer':
+    get:
+      tags:
+        - Business Actions
+      summary: Get business benefits offered
+      description: Get business benefits offered
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of benefits offered
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/provider'
-  '/secured/provider/{providerId}/product':
-    get:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_offer'
+    post:
       tags:
-        - Product
-      summary: Get provider products
-      description: get all the products for the provider
-      operationId: findAllByProviderId
+        - Business Actions
+      summary: Add new benefit offer to business
+      description: Add new benefit to business
       parameters:
-        - name: providerId
+        - name: businessId
           in: path
-          description: The id of the provider
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: New nenefit offer
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/benefit_offer'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
+  '/business/{businessId}/benefit/offer/{benefitId}':
+    put:
+      tags:
+        - Business Actions
+      summary: Update the benefit offer of the business
+      description: Update the benefit offer of the business
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+        - name: benefitId
+          in: path
+          description: The id of the business offerd bebefit
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Info about the provider location
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/benefit_offer'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
+    delete:
+      tags:
+        - Business Actions
+      summary: Removes the benefit offer of the business
+      description: Removes the benefit offer of the business
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+        - name: benefitId
+          in: path
+          description: The id of the business offerd bebefit
           required: true
           schema:
             type: string
       responses:
         default:
           description: successful operation
-  '/secured/provider/{providerId}/product/classifications':
+  '/business/{businessId}/benefit/used':
     get:
       tags:
-        - Product
-      summary: Get products classification options
-      description: Get products classification options
-      operationId: getProductClassifications
+        - Business Actions
+      summary: Get list of benefits that the business sold
+      description: Get list of benefits that the business sold
+                    The default is one month back and max of 100 benefits
       parameters:
-        - name: providerId
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+        - name: from
+          in: query
+          description: The starting date to get the list
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: The ending date to get the list
+          required: false
+          schema:
+            type: string
+        - name: maxrec
+          in: query
+          description: The maximum number of record to show, defualt is 100
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_used'
+  '/business/{businessId}/benefit/request':
+    get:
+      tags:
+        - Business Actions
+      summary: List all the benefit purchase requsts for the business
+      description: List all the benefit purchase requsts for the business
+      parameters:
+        - name: businessId
           in: path
           description: The id of the provider
           required: true
@@ -923,187 +629,33 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/productClassificationCategory'
-        
+                  $ref: '#/components/schemas/benefit_purchase_requst'
     post:
       tags:
-        - Product
-      summary: Create new provider product
-      description: Add new product for the provider
-      operationId: createProduct
+        - Business Actions
+      summary: Redeem the benefit by the business
+      description: Redeem the benefit by the business
       parameters:
-        - name: providerId
+        - name: businessId
           in: path
           description: The id of the provider
           required: true
           schema:
             type: string
       requestBody:
-        description: Info about the provider location
+        description: Uniqe identification for the benefit purchase requst
         required: true
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/product'
-      responses:
-        default:
-          description: successful operation
-  '/secured/provider/{providerId}/product/{product_id}':
-    put:
-      tags:
-        - Product
-      summary: Change product
-      description: Change product for the provider
-      operationId: updateProduct
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: product_id
-          in: path
-          description: The id of the product to delete
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Info about the provider location
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/product'
-      responses:
-        default:
-          description: successful operation
-    delete:
-      tags:
-        - Product
-      summary: Delete provider product
-      description: Delete one product for the provider
-      operationId: deleteProduct
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: product_id
-          in: path
-          description: The id of the product to delete
-          required: true
-          schema:
-            type: string
-      responses:
-        default:
-          description: successful operation
-  '/secured/provider/{providerId}/product/{product_id}/picture':
-    get:
-      tags:
-        - Product
-      summary: Get the product picture
-      description: The picture of the provider for the provider request
-      operationId: updateBankDetails
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: product_id
-          in: path
-          description: The id of the product to delete
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/responses/ByteImage'   # <-----
-        '401':
-          $ref: '#/components/responses/Unauthorized'   # <-----
-        '404':
-          $ref: '#/components/responses/NotFound'       # <-----
-    post:
-      tags:
-        - Product
-      summary: Update or set product picture
-      description: Update or set provider picture
-      operationId: updateBankDetails
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-        - name: product_id
-          in: path
-          description: The id of the product to delete
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: File structure with base64 property
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/file_base64'
+              $ref: '#/components/schemas/benefit_purchase_requst_redeem'
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/provider'
-  '/secured/provider/{providerId}/redeem':
-    post:
-      tags:
-        - Provider Redeem
-      summary: Use the tour code to redeem the tour
-      description: Set the customer tour as used for that provider
-      operationId: redeemTour
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Info about the provider redeem
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/redeem_request'
-      responses:
-        default:
-          description: successful operation
-  '/secured/provider/{providerId}/redeem/history':
-    get:
-      tags:
-        - Provider Redeem
-      summary: List of all the reedemed coupons
-      description: List of all the reedemed coupons
-      parameters:
-        - name: providerId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/providerPrevReedem'
+                $ref: '#/components/schemas/benefit_used'
 # securityDefinitions:
 #  petstore_auth:
 #    type: oauth2
@@ -1146,8 +698,7 @@ components:
           type: string
         password:
           type: string
-        pushNotificationToken:
-          type: string
+        
     
     login_response:
       type: object
@@ -1166,8 +717,138 @@ components:
           type: string
         provider_id:
           type: string
+  # Business ######################
+  
+    address:
+      type: object
+      properties:
+        adress1:
+          type: string
+        address2:
+          type: string
+        district:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        postalCode:
+          type: string
+        phone:
+          type: string
+        location:
+          $ref: '#/components/schemas/location'
+    location:
+      type: object
+      properties:
+        x:
+          type: number
+          format: dubble
+        y:
+          type: number
+          format: dubble
     
-    customer:
+    business:
+      type: object
+      properties:
+        email:
+          type: string
+        providerName:
+          type: string
+        address:
+          $ref: '#/components/schemas/address'
+        information:
+          $ref: '#/components/schemas/businessInformation'
+          
+    businessInformation:
+      type: object
+      properties:
+        contactName:
+          type: string
+        decription:
+          type: string
+        picture_url:
+          type: string
+        
+    benefit_type:
+      description: Unique code for the request
+      type: string
+      enum: [type1, type2]
+      
+    benefit_offer:
+      type: object
+      properties:
+        type:
+           $ref: '#/components/schemas/benefit_type'
+        name:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+        - type
+        - value
+        - description
+    
+    benefit_used:
+      type: object
+      properties:
+        type:
+           $ref: '#/components/schemas/benefit_type'
+        status:
+          type: string
+        value:
+          type: string
+        name:
+          type: string
+        count_used:
+          type: number
+        count_total:
+          type: number
+        description:
+          type: string
+      required:
+        - type
+        - status
+        - value
+        
+    benefit_purchase_requst:
+      type: object
+      properties:
+        businessId:
+          description: the ID of the business the benefit belongs to
+          type: string
+        code:
+          $ref: '#/components/schemas/benefit_purchase_code'
+        requestTime:
+          description: The time the request was sent
+          type: string
+          format: date-time
+      required:
+        - businessId
+        - code
+        - requestTime
+        
+    benefit_purchase_code:
+      description: Unique code for the request
+      type: string
+    
+    benefit_purchase_requst_redeem:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/benefit_purchase_code'
+        redeemTime:
+          type: string
+          format: date-time
+          
+  
+  # User ######################
+    
+    
+    user:
       type: object
       properties:
         id:
@@ -1184,18 +865,21 @@ components:
         score:
           type: integer
           format: int32
-        prefereces:
-          $ref: '#/components/schemas/CustomerTourPreferences'
+        pushNotificationToken:
+          type: string
+        pushNotificationLevel:
+          type: integer
+          format: int32
         details:
-          $ref: '#/components/schemas/CustomerDetails'
-          
-    customer_update:
+          $ref: '#/components/schemas/user_details'
+        info:
+          $ref: '#/components/schemas/user_personal_info'
+        prefereces:
+          $ref: '#/components/schemas/user_preferences'
+    
+    user_details:
       type: object
       properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
         pushNotificationToken:
           type: string
         pushNotificationLevel:
@@ -1203,9 +887,9 @@ components:
           format: int32
         appLanguage:
           type: string
-          enum: [eng, esp]
-    
-    customer_details:
+          enum: [heb, eng]
+          
+    user_personal_info:
       type: object
       properties:
         homeCountry:
@@ -1220,7 +904,7 @@ components:
           type: string
           format: date-time
           
-    CustomerTourPreferences:
+    user_preferences:
       type: object
       properties:
         walker:
@@ -1245,346 +929,63 @@ components:
         alcohol:
           type: string
           enum: [none, mild, full]
-    
-    CustomerDetails:
+          
+    # Like benefit_offer but with business info for display
+    benefit_user_offer:
       type: object
       properties:
         id:
+          description: The offered benefit id
           type: string
-        homeCountry:
-          type: string
-        gender:
-          type: string
-          enum: [m, f]
-        age:
-          type: integer
-          format: int32
-        birthDate:
-          type: string
-    
-    tourRequest:
-      type: object
-      properties:
-        userID:
-          type: integer
-          format: int64
-        location:
-          $ref: '#/components/schemas/location'
-        requestTime:
-          type: string
-          format: date-time
-        preferences:
-          $ref: '#/components/schemas/CustomerTourPreferences'
-    location:
-      type: object
-      properties:
-        x:
-          type: number
-          format: dubble
-        y:
-          type: number
-          format: dubble
-          
-    preferenceQuestion:
-      type: object
-      properties:
-        preferenceVar:
-          type: string
-        questionText:
-          type: string
-        valueType:
-          type: string
-          enum: [number, string]
-        scaleSize:
-          type: integer
-          format: int64
-        minText:
-          type: string
-        maxText:
-          type: string
-        constValues:
-          type: array
-          items:
-            type: string
-            
-    promotion_apply:
-      type: object
-      properties:
-        promotionCode:
-          type: string
-        price:
-          type: number
-        couponCount:
-          type: integer
-          format: int64
-        customerId:
-          type: string
-      required:
-        - promotionCode
-        - price
-        - couponCount
-    
-    new_price:
-      type: object
-      properties:
-        status:
-          type: string
-          enum: [apply, not_found, error]
-        message:
-          type: string
-        newPrice:
-          type: number
-    
-    address:
-      type: object
-      properties:
-        adress1:
-          type: string
-        address2:
-          type: string
-        district:
-          type: string
-        city:
-          type: string
-        country:
-          type: string
-        postalCode:
-          type: string
-        phone:
-          type: string
-        location:
-          $ref: '#/components/schemas/location'
-    
-    buy_tour_request:
-      type: object
-      properties:
-        suggetedTourCode:
-          type: string
-        confirmationId:
-          type: string
-        purchaseType:
-          type: string
-          enum: [paypal, card]
-        purchaseTime:
-          type: string
-        promotionCode:
-          type: string
-      required:
-        - suggetedTourCode
-        - confirmationId
-        - purchaseType
-        - purchaseTime
-          
-    suggested_tour:
-      type: object
-      properties:
-        id:
-          type: string
-        tourCode:
-          type: string
-        tourRequestToken:
+        type:
           type: string
         name:
+          type: string
+        businessName:
           type: string
         pictureURL:
           type: string
-        price:
+        value:
           type: number
-        distance:
-          type: string
-        generatedTime:
-          type: string
-        tourTime:
-          type: string
     
-    provider_signup:
+    buy_benefit_offer_request:
       type: object
       properties:
-        email:
+        offerId:
+          description: The offered benefit id
           type: string
-        password:
-          type: string
-        providerName:
-          type: string
-        contactName:
-          type: string
-      required:
-        - email
-        - password
-        - providerName
-        - contactName
-
-    provider:
-      type: object
-      properties:
-        email:
-          type: string
-        providerName:
-          type: string
-        contactName:
-          type: string
-        address:
-          $ref: '#/components/schemas/address'
-        information:
-          $ref: '#/components/schemas/providerInformation'
-        bankDetails:
-          $ref: '#/components/schemas/providerBankDetails'
-        activeTime:
-          $ref: '#/components/schemas/providerActiveTime'
-          
-    providerInformation:
-      type: object
-      properties:
-        typesOfProductDetail:
-          type: string
-        placeInfo:
-          type: string
-    
-    providerBankDetails:
-      type: object
-      properties:
-        beneficiaryName:
-          type: string
-        beneficiaryAddress:
-          type: string
-        bankName:
-          type: string
-        branchNumber:
-          type: string
-        accountNumber:
-          type: string
-          
-    providerActiveTime:
-      type: object
-      properties:
-        days:
-          type: array
-          items:
-            $ref: '#/components/schemas/providerActiveTimeDay'
-    
-    providerActiveTimeDay:
-      type: object
-      properties:
-        day:
-          type: string
-          enum: [sunday, monday, tuesday, wednesday, thursday, friday, saturday]
-        startTime:
-          type: string
-        endTime:
-          type: string
-        status:
-          type: string
-          enum: [open, close]
-        label:
-          type: string
-        
-    product:
-      type: object
-      properties:
-        productName:
-          type: string
-        productType:
-          type: string
-        price:
-          type: string
-        description :
-          type: string
-      required:
-        - productName
-        - productType
-        - price
-        - description
-        
-    productClassification:
-      type: object
-      properties:
-        name:
-          type: string
-        text:
-          type: string
-        order:
-          type: integer
-        categories:
-          description: list of categories
-          type: array
-          items:
-            $ref: '#/components/schemas/productClassificationCategory'
-      required:
-        - name
-        - text
-        - order
-    productClassificationCategory:
-      type: object
-      properties:
-        name:
-          type: string
-        text:
-          type: string
-        order:
-          type: integer
-        subCategories:
-          description: list of sub categories
-          type: array
-          items:
-            $ref: '#/components/schemas/productClassificationSubCategory'
-      required:
-        - name
-        - text
-        - order
-    productClassificationSubCategory:
-      type: object
-      properties:
-        name:
-          type: string
-        text:
-          type: string
-        order:
-          type: integer
-      required:
-        - name
-        - text
-        - order
-        
-    redeem_request:
-      type: object
-      properties:
         code:
-          description: Active tour code of the customer
-          type: string
-        redeemType:
-          description: set 'provider_scan', 'provider_code', 'user_manual'
-          type: string
-          enum:
-            - provider_scan
-            - provider_code
-            - user_manual
-        requestTime:
-          description: The time the request was sent
-          type: string
-        userReason:
-          description: only when 'user_manual'
-          type: string
-          enum:
-            - provider_request
-            - provider_closed
-            - provider_not_found
-            - technical_issues
-            - other
-      required:
-        - code
-        - redeemType
-        - userReason
-    
-    providerPrevReedem:
+          $ref: '#/components/schemas/benefit_purchase_code'
+        
+          
+    benefit_purchased:
       type: object
       properties:
-        redeemPrice:
-          type: number
-          format: float
-        redeemTime:
+        id:
+          description: The offered benefit id
           type: string
-          format: date-time
-          
+        type:
+          $ref: '#/components/schemas/benefit_type'
+        status:
+          $ref: '#/components/schemas/benefit_purchased_status'
+        code:
+          $ref: '#/components/schemas/benefit_purchase_code'
+        name:
+          type: string
+        businessName:
+          type: string
+        pictureURL:
+          type: string
+        value:
+          type: number
+    
+    benefit_purchased_status:
+      description: The statuses of purchased benefit
+      type: string
+      enum: [active]
+    
+## Messages #####################
+
     message_acknowledge:
       type: object
       properties:
