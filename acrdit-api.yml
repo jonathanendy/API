@@ -661,7 +661,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_purchase_request'
-  '/business/{businessId}/benefit_purchase/request/{requestId}':
     post:
       tags:
         - Business Actions
@@ -671,12 +670,6 @@ paths:
         - name: businessId
           in: path
           description: The id of the business
-          required: true
-          schema:
-            type: string
-        - name: requestId
-          in: path
-          description: The id of the request
           required: true
           schema:
             type: string
