@@ -144,10 +144,29 @@ paths:
   # Customer Actions
   # -----------------------
   '/customer/{id}':
+    get:
+      tags:
+        - Customer Actions
+      summary: Get the Customer data
+      description: Get the Customer data
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Purchase request with code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
     put:
       tags:
         - Customer Actions
-      summary: Updates the Customer data
+      summary: (Future) Updates the Customer data
       description: Updates the Customer data
       parameters:
         - name: id
