@@ -163,6 +163,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customer'
+  '/customer/{id}/benefit_offer':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all the benefits offered to the Customer
+      description: List all the benefits offered to the Customer
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: The current location of the customer
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_offer'
   '/customer/{id}/benefit_purchased/request':
     post:
       tags:
