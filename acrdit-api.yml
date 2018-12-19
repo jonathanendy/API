@@ -163,28 +163,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customer'
-    put:
-      tags:
-        - Customer Actions
-      summary: (Future) Updates the Customer data
-      description: Updates the Customer data
-      parameters:
-        - name: id
-          in: path
-          description: The id of the Customer
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The Customer object with the relevant data to update
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/customer'
-      responses:
-        default:
-          description: successful operation
   '/customer/{id}/benefit_purchased/request':
     post:
       tags:
@@ -312,7 +290,7 @@ paths:
     get:
       tags:
         - Business Actions
-      summary: (Future) Get all business info
+      summary: Get all business info
       description: Get all business info
       parameters:
         - name: businessId
@@ -328,55 +306,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/business'
-    put:
-      tags:
-        - Business Actions
-      summary: (Future) Update business info
-      description: Update business info
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Info about the provider location
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/business'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/business'
-  '/business/{businessId}/picture':
-    post:
-      tags:
-        - Business Actions
-      summary: (Future) Update or set provider picture
-      description: Update or set provider picture
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: File structure with base64 property
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/file_base64'
-      responses:
-        '200':
-          description: successful operation
   '/business/{businessId}/benefit_offer':
     get:
       tags:
@@ -399,109 +328,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_offer'
-    post:
-      tags:
-        - Business Actions
-      summary: (Future) Add new benefit offer to business
-      description: Add new benefit to business
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the business
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: New nenefit offer
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/benefit_offer'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/benefit_offer'
-  '/business/{businessId}/benefit_offer/{benefitId}':
-    put:
-      tags:
-        - Business Actions
-      summary: (Future) Update the benefit offer of the business
-      description: Update the benefit offer of the business
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the business
-          required: true
-          schema:
-            type: string
-        - name: benefitId
-          in: path
-          description: The id of the business offerd bebefit
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Info about the provider location
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/benefit_offer'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/benefit_offer'
-    delete:
-      tags:
-        - Business Actions
-      summary: (Future) Removes the benefit offer of the business
-      description: Removes the benefit offer of the business
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the business
-          required: true
-          schema:
-            type: string
-        - name: benefitId
-          in: path
-          description: The id of the business offerd bebefit
-          required: true
-          schema:
-            type: string
-      responses:
-        default:
-          description: successful operation
-  
-  '/business/{businessId}/benefit_purchased/request':
-    get:
-      tags:
-        - Business Actions
-      summary: (Future) List all the benefit purchase requsts for the business
-      description: List all the benefit purchase requsts for the business
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the business
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of Classification Categories
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/benefit_purchase_request'
   '/business/{businessId}/benefit_purchased/redeem':
     post:
       tags:
@@ -530,28 +356,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/benefit_purchased'
   
-  '/business/{businessId}/benefit_usaged/request':
-    get:
-      tags:
-        - Business Actions
-      summary: (Future) List all the benefit purchase requsts for the business
-      description: List all the benefit purchase requsts for the business
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the business
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of Classification Categories
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/benefit_usage_request'
   '/business/{businessId}/benefit_usaged/redeem':
     post:
       tags:
