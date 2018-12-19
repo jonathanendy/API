@@ -617,6 +617,9 @@ components:
     benefit_purchase_request:
       type: object
       properties:
+        benefit_offer_id:
+          description: the ID of the business the benefit belongs to
+          type: string
         businessId:
           description: the ID of the business the benefit belongs to
           type: string
@@ -651,21 +654,17 @@ components:
       - code
       - redeemTime
     
-    benefit_purchased_status:
-      description: The statuses of purchased benefit
-      type: string
-      enum: [active,ended]
-    
     benefit_purchased:
       type: object
       properties:
         id:
           description: The offered benefit id
           type: string
+        benefit_purchased_id:
+          description: The origin benefit purchased id
+          type: string
         type:
           $ref: '#/components/schemas/benefit_type'
-        status:
-          $ref: '#/components/schemas/benefit_purchased_status'
         code:
           $ref: '#/components/schemas/benefit_code'
         name:
@@ -674,7 +673,7 @@ components:
           type: string
         pictureURL:
           type: string
-        value:
+        price:
           type: number
     
     benefit_usage_request:
