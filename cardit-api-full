@@ -14,7 +14,7 @@ tags:
   - name: Business Actions
     description: manage provider data
 paths:
-  '/customer/login':
+  '/customer/login/email':
     post:
       tags:
         - Customer Login
@@ -32,7 +32,7 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/customer/login/check_email':
+  '/customer/login/email/check':
     post:
       tags:
         - Customer Login
@@ -52,7 +52,7 @@ paths:
       responses:
         '405':
           description: Invalid input
-  '/customer/login/signup':
+  '/customer/login/email/signup':
     post:
       tags:
         - Customer Login
@@ -93,7 +93,7 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/customer/login/facebook':
+  '/customer/login/facebook/token':
     post:
       tags:
         - Customer Login
@@ -116,7 +116,7 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/customer/login/google':
+  '/customer/login/google/token':
     post:
       tags:
         - Customer Login
@@ -144,11 +144,11 @@ paths:
   # Customer Actions
   # -----------------------
   '/customer/{id}':
-    get:
+    put:
       tags:
         - Customer Actions
-      summary: Get the Customer data
-      description: Get the Customer data
+      summary: Updates the Customer data
+      description: Updates the Customer data
       parameters:
         - name: id
           in: path
@@ -156,13 +156,60 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        description: The Customer object with the relevant data to update
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/customer'
       responses:
-        '200':
-          description: Purchase request with code
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customer'
+        default:
+          description: successful operation
+  '/customer/{id}/profile_pic':
+    post:
+      tags:
+        - Customer Actions
+      summary: Updates the Customer profile picture
+      description: Updates the Customer profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the Customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File structure with base64 property
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/file_base64'
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  '/customer/{id}/profile_pic_multipart':
+    post:
+      tags:
+        - Customer Actions
+      summary: Updates the Customer profile picture
+      description: Updates the Customer profile picture
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+          
   '/customer/{id}/benefit_offer':
     get:
       tags:
@@ -176,6 +223,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: location
+          in: query
+          description: The current location of the customer
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: List of benefits offered
@@ -184,8 +237,8 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/benefit_offer'
-  '/customer/{id}/benefit_purchased/request':
+                  $ref: '#/components/schemas/benefit_customer_offer'
+  '/customer/{id}/benefit_offer/buy':
     post:
       tags:
         - Customer Actions
@@ -200,25 +253,27 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Info about the purchase
+        description: Info about the purch
         required: true
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/benefit_purchase_request'
+              $ref: '#/components/schemas/buy_benefit_offer_request'
       responses:
         '200':
-          description: Purchase request with code
+          description: List of benefits offered
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/benefit_purchase_request'
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_purchase_request'
   '/customer/{id}/benefit_purchased':
     get:
       tags:
         - Customer Actions
-      summary: List all the benefits the Customer purchased
-      description: List all the benefits the Customer purchased
+      summary: List all the benefits the Customer purchased by status
+      description: List all the benefits the Customer purchased by status
       parameters:
         - name: id
           in: path
@@ -226,6 +281,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: status
+          in: query
+          description: the status of the purchased benefit to list
+          required: true
+          schema:
+            $ref: '#/components/schemas/benefit_purchased_status'
       responses:
         '200':
           description: List of benefits offered
@@ -235,7 +296,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_purchased'
-  '/customer/{id}/benefit_usage/request':
+  '/customer/{id}/benefit_purchased/use':
     post:
       tags:
         - Customer Actions
@@ -249,41 +310,97 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Info about the usage reuest
+        description: Info about the purch
         required: true
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/benefit_usage_request'
+              $ref: '#/components/schemas/use_benefit_purchase_request'
       responses:
         '200':
-          description: Usage request with code
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/benefit_usage_request'
-  '/customer/{id}/benefit_usage':
-    get:
-      tags:
-        - Customer Actions
-      summary: List benefit usage for the customer
-      description: List benefit usage for the customer
-      parameters:
-        - name: id
-          in: path
-          description: The id of the Customer
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of previous benefit usage 
+          description: List of benefits offered
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/benefit_usage'              
+                  $ref: '#/components/schemas/benefit_used_request'
+  
+  #
+  # Customer Messages
+  #
+  '/customer/{id}/messages/system/new':
+    get:
+      tags:
+        - Customer Messages
+      summary: Get customer messages by status
+      description: >-
+        The customer is already registered in the system, use after the buying
+        confirmation
+      operationId: getCustomerMessages
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+  '/customer/{id}/messages/system/acknowledge':
+    put:
+      tags:
+        - Customer Messages
+      summary: Get customer messages by status
+      description: >-
+        The customer is already registered in the system, use after the buying
+        confirmation
+      operationId: getCustomerMessages
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Info about the purch
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/message_acknowledge'
+      responses:
+        '405':
+          description: Invalid input
+  '/customer/{id}/messages/system/answer':
+    post:
+      tags:
+        - Customer Messages
+      summary: Get customer messages by status
+      description: Answer to cusromer message
+      parameters:
+        - name: id
+          in: path
+          description: the database id of the customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Info about the purch
+        required: true
+        content:
+          'application/json':
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/customer_message_answer_yesno'
+                - $ref: '#/components/schemas/customer_message_answer_text'
+              discriminator:
+                propertyName: type
+      responses:
+        '405':
+          description: Invalid input
   
   #
   # Business login
@@ -328,6 +445,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/business'
+    put:
+      tags:
+        - Business Actions
+      summary: Update business info
+      description: Update business info
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Info about the provider location
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/business'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/business'
+  '/business/{businessId}/picture':
+    post:
+      tags:
+        - Business Actions
+      summary: Update or set provider picture
+      description: Update or set provider picture
+      operationId: updateBankDetails
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the provider
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File structure with base64 property
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/file_base64'
+      responses:
+        '200':
+          description: successful operation
   '/business/{businessId}/benefit_offer':
     get:
       tags:
@@ -350,12 +517,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_offer'
-  '/business/{businessId}/redeem':
     post:
       tags:
         - Business Actions
-      summary: Redeem the benefit by the business
-      description: Redeem the benefit by the business
+      summary: Add new benefit offer to business
+      description: Add new benefit to business
       parameters:
         - name: businessId
           in: path
@@ -364,55 +530,57 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Uniqe identification for the benefit purchase requst
+        description: New nenefit offer
         required: true
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/benefit_purchase_request_redeem'
+              $ref: '#/components/schemas/benefit_offer'
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/benefit_purchased'
-                  - $ref: '#/components/schemas/benefit_used_request_redeem
-  '/business/{businessId}/benefit_purchased/redeem':
-    post:
+                $ref: '#/components/schemas/benefit_offer'
+  '/business/{businessId}/benefit_offer/{benefitId}':
+    put:
       tags:
         - Business Actions
-      summary: Redeem the benefit by the business
-      description: Redeem the benefit by the business
+      summary: Update the benefit offer of the business
+      description: Update the benefit offer of the business
       parameters:
         - name: businessId
           in: path
           description: The id of the business
+          required: true
+          schema:
+            type: string
+        - name: benefitId
+          in: path
+          description: The id of the business offerd bebefit
           required: true
           schema:
             type: string
       requestBody:
-        description: Uniqe identification for the benefit purchase requst
+        description: Info about the provider location
         required: true
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/benefit_purchase_request_redeem'
+              $ref: '#/components/schemas/benefit_offer'
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/benefit_purchased'
-  
-  '/business/{businessId}/benefit_usaged/redeem':
-    post:
+                $ref: '#/components/schemas/benefit_offer'
+    delete:
       tags:
         - Business Actions
-      summary: Redeem the benefit by the business
-      description: Redeem the benefit by the business
+      summary: Removes the benefit offer of the business
+      description: Removes the benefit offer of the business
       parameters:
         - name: businessId
           in: path
@@ -420,43 +588,16 @@ paths:
           required: true
           schema:
             type: string
-      requestBody:
-        description: Uniqe identification for the benefit purchase requst
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/benefit_used_request_redeem'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/benefit_usage'
-  '/business/{businessId}/benefit_purchased':
-    get:
-      tags:
-        - Business Actions
-      summary: (Future) List all the benefit purchase requsts for the business
-      description: List all the benefit purchase requsts for the business
-      parameters:
-        - name: businessId
+        - name: benefitId
           in: path
-          description: The id of the business
+          description: The id of the business offerd bebefit
           required: true
           schema:
             type: string
       responses:
-        '200':
-          description: List of Classification Categories
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/benefit_purchased'
-  '/business/{businessId}/benefit_usaged':
+        default:
+          description: successful operation
+  '/business/{businessId}/benefit_used':
     get:
       tags:
         - Business Actions
@@ -496,7 +637,105 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/benefit_usage'
+                  $ref: '#/components/schemas/benefit_used'
+  
+  '/business/{businessId}/benefit_purchase/request':
+    get:
+      tags:
+        - Business Actions
+      summary: List all the benefit purchase requsts for the business
+      description: List all the benefit purchase requsts for the business
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of Classification Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_purchase_request'
+    post:
+      tags:
+        - Business Actions
+      summary: Redeem the benefit by the business
+      description: Redeem the benefit by the business
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Uniqe identification for the benefit purchase requst
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/benefit_purchase_request_redeem'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_used'
+  
+  '/business/{businessId}/benefit_use/request':
+    get:
+      tags:
+        - Business Actions
+      summary: List all the benefit purchase requsts for the business
+      description: List all the benefit purchase requsts for the business
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of Classification Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_used_request'
+    post:
+      tags:
+        - Business Actions
+      summary: Redeem the benefit by the business
+      description: Redeem the benefit by the business
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Uniqe identification for the benefit purchase requst
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/benefit_used_request_redeem'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_used'
 # securityDefinitions:
 #  petstore_auth:
 #    type: oauth2
@@ -539,6 +778,7 @@ components:
           type: string
         password:
           type: string
+        
     
     login_response:
       type: object
@@ -557,7 +797,8 @@ components:
           type: string
         provider_id:
           type: string
-
+  # Business ######################
+  
     address:
       type: object
       properties:
@@ -587,33 +828,12 @@ components:
           type: number
           format: dubble
     
-    customer:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        Gender:
-          type: string
-          enum: [male, female]
-        age:
-          type: integer
-          format: int32
-        birthDate:
-          type: string
-          format: date-time
-          
     business:
       type: object
       properties:
         email:
           type: string
-        name:
+        providerName:
           type: string
         address:
           $ref: '#/components/schemas/address'
@@ -629,48 +849,147 @@ components:
           type: string
         picture_url:
           type: string
-        facebook_url:
-          type: string
         
     benefit_type:
       description: Unique code for the request
       type: string
-      enum: [free, prepaid]
+      enum: [type1, type2]
       
     benefit_offer:
       type: object
       properties:
-        id:
-          type: string
-        businessId:
-          type: string
         type:
-          $ref: '#/components/schemas/benefit_type'
-        validFrom:
+           $ref: '#/components/schemas/benefit_type'
+        name:
           type: string
-          format: date-time
-        validTo:
+        value:
           type: string
-          format: date-time
         description:
           type: string
-        price:
+      required:
+        - name
+        - type
+        - value
+        - description
+    
+    benefit_used:
+      type: object
+      properties:
+        type:
+           $ref: '#/components/schemas/benefit_type'
+        status:
           type: string
-        points:
+        value:
+          type: string
+        name:
+          type: string
+        count_used:
           type: number
+        count_total:
+          type: number
+        description:
+          type: string
       required:
         - type
-        - validFrom
-        - validTo
-        - price
-        - description
+        - status
+        - value
+        
+  
+  # Customer ######################
+    
+    
+    customer:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        appLanguage:
+          type: string
+          enum: [eng, esp]
+        score:
+          type: integer
+          format: int32
+        pushNotificationToken:
+          type: string
+        pushNotificationLevel:
+          type: integer
+          format: int32
+        details:
+          $ref: '#/components/schemas/customer_details'
+        info:
+          $ref: '#/components/schemas/customer_personal_info'
+        
+    
+    customer_details:
+      type: object
+      properties:
+        pushNotificationToken:
+          type: string
+        pushNotificationLevel:
+          type: integer
+          format: int32
+        appLanguage:
+          type: string
+          enum: [heb, eng]
+          
+    customer_personal_info:
+      type: object
+      properties:
+        homeCountry:
+          type: string
+        String:
+          type: string
+          enum: [male, female]
+        age:
+          type: integer
+          format: int32
+        birthDate:
+          type: string
+          format: date-time
+          
+          
+    # Like benefit_offer but with business info for display
+    benefit_customer_offer:
+      type: object
+      properties:
+        id:
+          description: The offered benefit id
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        businessName:
+          type: string
+        pictureURL:
+          type: string
+        value:
+          type: number
+    
+    buy_benefit_offer_request:
+      type: object
+      properties:
+        benefit_offer_Id:
+          description: The offered benefit id
+          type: string
+        requestTime:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/location'
+      required:
+        - offerId
+        - requestTime
     
     benefit_purchase_request:
       type: object
       properties:
-        benefit_offer_id:
-          description: the ID of the business the benefit belongs to
-          type: string
         businessId:
           description: the ID of the business the benefit belongs to
           type: string
@@ -678,7 +997,7 @@ components:
           description: the ID of the business the benefit belongs to
           type: string
         code:
-          $ref: '#/components/schemas/benefit_code'
+          $ref: '#/components/schemas/benefit_purchase_code'
         requestTime:
           description: The time the request was sent
           type: string
@@ -688,7 +1007,7 @@ components:
         - code
         - requestTime
         
-    benefit_code:
+    benefit_purchase_code:
       description: Returned by the server for new Customer requests,
                     Send by the business for confirmation
       type: string
@@ -697,13 +1016,19 @@ components:
       type: object
       properties:
         code:
-          $ref: '#/components/schemas/benefit_code'
+          $ref: '#/components/schemas/benefit_purchase_code'
         redeemTime:
           type: string
           format: date-time
       required:
       - code
       - redeemTime
+        
+    
+    benefit_purchased_status:
+      description: The statuses of purchased benefit
+      type: string
+      enum: [active,ended]
     
     benefit_purchased:
       type: object
@@ -711,81 +1036,149 @@ components:
         id:
           description: The offered benefit id
           type: string
-        benefit_purchased_id:
-          description: The origin benefit purchased id
-          type: string
         type:
           $ref: '#/components/schemas/benefit_type'
+        status:
+          $ref: '#/components/schemas/benefit_purchased_status'
         code:
-          $ref: '#/components/schemas/benefit_code'
+          $ref: '#/components/schemas/benefit_purchase_code'
         name:
           type: string
         businessName:
           type: string
         pictureURL:
           type: string
-        price:
+        value:
           type: number
     
-    benefit_usage_request:
+    use_benefit_purchase_request:
       type: object
-      description: The Customer gets this object, And the business can query it
+      description: Only the Customer sending this object
       properties:
-        id:
-          description: The usage request id
-          type: string
-        benefit_purchased_id:
-          description: The origin benefit purchased id
-          type: string
-        businessId:
-          description: the ID of the business the benefit belongs to
-          type: string
-        CustomerId:
-          description: the ID of the customer requesting
+        benefitId:
+          description: The purchased benefit id
           type: string
         points:
-          description: The point to reduce
-                        Required only for points type
+          description: Requerd only for points type
           type: number
         # Only returned can not set by the Customer
         code:
-          $ref: '#/components/schemas/benefit_code'
+          $ref: '#/components/schemas/benefit_purchase_code'
         requestTime:
           type: string
           format: date-time
-          
-    benefit_usage:
+        location:
+          $ref: '#/components/schemas/location'
+      required:
+        - benefitId
+        - requestTime
+    
+    benefit_used_request:
       type: object
+      description: The Customer gets this object, And the business can query it
       properties:
-        id:
-          description: The benefit usage id
-          type: string
-        benefit_purchased_id:
-          description: The origin benefit purchased id
+        benefitId:
+          description: The purchased benefit id
           type: string
         businessId:
           description: the ID of the business the benefit belongs to
           type: string
         CustomerId:
-          description: the ID of the customer requesting
+          description: the ID of the business the benefit belongs to
           type: string
-        points_used:
+        points:
+          description: Requerd only for points type
           type: number
-        points_left:
-          type: number
+        # Only returned can not set by the Customer
+        code:
+          $ref: '#/components/schemas/benefit_purchase_code'
+        requestTime:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/location'
     
     benefit_used_request_redeem:
       type: object
       description: Only the business sending this object
       properties:
         code:
-          $ref: '#/components/schemas/benefit_code'
+          $ref: '#/components/schemas/benefit_purchase_code'
         redeemTime:
           type: string
           format: date-time
       required:
       - code
       - redeemTime
+    
+## Messages #####################
+
+    message_acknowledge:
+      type: object
+      properties:
+        time:
+          type: string
+        messages_ids:
+          description: list of message ids
+          type: array
+          items:
+            type: string
+          example: [5a1f34f38de25598b44311a1, 5a1f354e8de25598b44311a3, 5a1f35578de25598b44311a4]
+        
+        
+    # All message types
+    customer_message:
+      type: object
+      properties:
+        id:
+          description: message id
+          type: string
+        status:
+          description: type of answer relate to the type of message
+          type: string
+        customerID:
+          description: the Customer id of the message
+          type: string
+        type:
+          description: the Customer id of the message
+          type: string
+          enum: [eng, esp]
+        showSuspension:
+          description: time to delay the message
+          type: number
+    
+    
+    # All answer types
+    customer_message_answer_yesno:
+      type: object
+      required:
+        - type
+        - messageID
+      properties:
+        messageID:
+          description: message id
+          type: string
+        type:
+          description: yesno
+          type: string
+        text:
+          description: type of answer relate to the type of message
+          type: string
+    customer_message_answer_text:
+      type: object
+      required:
+        - type
+        - messageID
+      properties:
+        messageID:
+          description: message id
+          type: string
+        type:
+          description: text
+          type: string
+        text:
+          description: type of answer relate to the type of message
+          type: string
     
     error:
       type: object
