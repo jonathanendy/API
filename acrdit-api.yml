@@ -14,7 +14,7 @@ tags:
   - name: Business Actions
     description: manage provider data
 paths:
-  '/customer/login/email':
+  '/customer/login':
     post:
       tags:
         - Customer Login
@@ -32,7 +32,7 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/customer/login/email/check':
+  '/customer/login/check_email':
     post:
       tags:
         - Customer Login
@@ -52,7 +52,7 @@ paths:
       responses:
         '405':
           description: Invalid input
-  '/customer/login/email/signup':
+  '/customer/login/signup':
     post:
       tags:
         - Customer Login
@@ -93,7 +93,7 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/customer/login/facebook/token':
+  '/customer/login/facebook':
     post:
       tags:
         - Customer Login
@@ -116,7 +116,7 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
-  '/customer/login/google/token':
+  '/customer/login/google':
     post:
       tags:
         - Customer Login
@@ -174,12 +174,6 @@ paths:
           in: path
           description: The id of the Customer
           required: true
-          schema:
-            type: string
-        - name: location
-          in: query
-          description: The current location of the customer
-          required: false
           schema:
             type: string
       responses:
@@ -356,6 +350,35 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_offer'
+  '/business/{businessId}/redeem':
+    post:
+      tags:
+        - Business Actions
+      summary: Redeem the benefit by the business
+      description: Redeem the benefit by the business
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Uniqe identification for the benefit purchase requst
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/benefit_purchase_request_redeem'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/benefit_purchased'
+                  - $ref: '#/components/schemas/benefit_used_request_redeem
   '/business/{businessId}/benefit_purchased/redeem':
     post:
       tags:
