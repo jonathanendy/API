@@ -6,13 +6,15 @@ servers:
   - url: ''
 tags:
   - name: Customer Login
-    description: create and manage customers signups
+    description: Login and signup Customers
   - name: Customer Actions
-    description: create and manage customers signups
+    description: Manage Customers
   - name: Business Login
-    description: create and manage providers signups
+    description: Login and signup Business
   - name: Business Actions
-    description: manage provider data
+    description: Manage Business
+  - name: Admin Actions
+    description: Manage as Admin
 paths:
   '/customer/login':
     post:
@@ -308,48 +310,6 @@ paths:
   #
   # Business Actions
   #
-  '/business/{businessId}':
-    get:
-      tags:
-        - Business Actions
-      summary: Get all business info
-      description: Get all business info
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the provider
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/business'
-  '/business/{businessId}/benefit_offer':
-    get:
-      tags:
-        - Business Actions
-      summary: Get business benefits offered
-      description: Get business benefits offered
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the business
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of benefits offered
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/benefit_offer'
   '/business/{businessId}/redeem':
     post:
       tags:
@@ -378,62 +338,7 @@ paths:
               schema:
                 oneOf:
                   - $ref: '#/components/schemas/benefit_purchased'
-                  - $ref: '#/components/schemas/benefit_used_request_redeem
-  '/business/{businessId}/benefit_purchased/redeem':
-    post:
-      tags:
-        - Business Actions
-      summary: Redeem the benefit by the business
-      description: Redeem the benefit by the business
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the business
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Uniqe identification for the benefit purchase requst
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/benefit_purchase_request_redeem'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/benefit_purchased'
-  
-  '/business/{businessId}/benefit_usaged/redeem':
-    post:
-      tags:
-        - Business Actions
-      summary: Redeem the benefit by the business
-      description: Redeem the benefit by the business
-      parameters:
-        - name: businessId
-          in: path
-          description: The id of the business
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Uniqe identification for the benefit purchase requst
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/benefit_used_request_redeem'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/benefit_usage'
+                  - $ref: '#/components/schemas/benefit_usage'
   '/business/{businessId}/benefit_purchased':
     get:
       tags:
@@ -497,6 +402,206 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_usage'
+  #
+  # Business Actions
+  #
+  '/admin/business':
+    post:
+      tags:
+        - Admin Actions
+      summary: Add business to the system
+      description: Add business to the system
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/business'
+  '/admin/business/{businessId}':
+    get:
+      tags:
+        - Admin Actions
+      summary: Get all business info
+      description: Get all business info
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/business'
+    post:
+      tags:
+        - Admin Actions
+      summary: Update business info
+      description: Update business info
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Uniqe identification for the benefit purchase requst
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/business'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/business'
+  '/admin/business/{businessId}/benefit_offer':
+    get:
+      tags:
+        - Admin Actions
+      summary: Get All business benefits offered
+      description: Get All business benefits offered
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_offer'
+    post:
+      tags:
+        - Admin Actions
+      summary: Add benefit offered to business
+      description: Add benefit offered to business
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Uniqe identification for the benefit purchase requst
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/benefit_offer'
+      responses:
+        '200':
+          description: The created benefits offer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
+  '/admin/business/{businessId}/benefit_offer/{offerId}':
+    get:
+      tags:
+        - Admin Actions
+      summary: Get business offered benefit
+      description: Get business offered benefit
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+        - name: offerId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
+    post:
+      tags:
+        - Admin Actions
+      summary: Update business offered benefit
+      description: Update business offered benefit
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+        - name: offerId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Uniqe identification for the benefit purchase requst
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/benefit_offer'
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
+    delete:
+      tags:
+        - Admin Actions
+      summary: Update business offered benefit
+      description: Update business offered benefit
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+        - name: offerId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
 # securityDefinitions:
 #  petstore_auth:
 #    type: oauth2
@@ -598,12 +703,9 @@ components:
           type: string
         lastName:
           type: string
-        Gender:
+        gender:
           type: string
           enum: [male, female]
-        age:
-          type: integer
-          format: int32
         birthDate:
           type: string
           format: date-time
@@ -655,7 +757,7 @@ components:
         description:
           type: string
         price:
-          type: string
+          type: number
         points:
           type: number
       required:
