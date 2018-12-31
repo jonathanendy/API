@@ -3,7 +3,7 @@ info:
   version: 0.0.1
   title: CardIt
 servers: 
-  - url: ''
+  - url: 'carditapi.hipper.world:8090'
 tags:
   - name: Customer Login
     description: Login and signup Customers
@@ -145,6 +145,21 @@ paths:
   # -----------------------
   # Customer Actions
   # -----------------------
+  '/customer/public/benefit_offer':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all the benefits offered
+      description: List all the benefits offered
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_offer'
   '/customer/{id}':
     get:
       tags:
