@@ -325,7 +325,35 @@ paths:
   #
   # Business Actions
   #
-  '/business/{businessId}/redeem':
+  '/business/{businessId}/request':
+    get:
+      tags:
+        - Business Actions
+      summary: Redeem the benefit by the business
+      description: Redeem the benefit by the business
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+        - name: code
+          in: query
+          description: filter by the code of the request, suppose to return only one request
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                 $ref: '#/components/schemas/benefit_request_details'
+  '/business/{businessId}/request/redeem':
     post:
       tags:
         - Business Actions
@@ -344,7 +372,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/benefit_purchase_request_redeem'
+              $ref: '#/components/schemas/benefit_request_redeem'
       responses:
         '200':
           description: successful operation
@@ -376,7 +404,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_purchased'
-  '/business/{businessId}/benefit_usaged':
+  '/business/{businessId}/benefit_usage':
     get:
       tags:
         - Business Actions
@@ -748,11 +776,16 @@ components:
           type: string
         facebook_url:
           type: string
-        
+    
     benefit_type:
-      description: Unique code for the request
+      description: The type of the benefit
       type: string
       enum: [free, prepaid]
+    
+    request_type:
+      description: The type of the request
+      type: string
+      enum: [purchase, use]
       
     benefit_offer:
       type: object
@@ -785,7 +818,7 @@ components:
     benefit_purchase_request:
       type: object
       properties:
-        benefit_offer_id:
+        benefitOfferId:
           description: the ID of the business the benefit belongs to
           type: string
         businessId:
@@ -805,21 +838,83 @@ components:
         - code
         - requestTime
         
+    benefit_request_details:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/request_type'
+        code:
+          $ref: '#/components/schemas/benefit_code'
+        customerEmail:
+          description: The name of the customer
+          type: string
+        customerFirstName:
+          description: The name of the customer
+          type: string
+        customerLastName:
+          description: The name of the customer
+          type: string
+        requestTime:
+          description: The time the request was sent
+          type: string
+          format: date-time
+      required:
+        - benefit_offer_id
+        - code
+        - requestTime
+        
+    benefit_request_details_purchase:
+      allOf:
+        - $ref: '#/components/schemas/benefit_request_details'
+        - type: object
+          properties:
+            benefitOfferType:
+              $ref: '#/components/schemas/benefit_type'
+            benefitOfferId:
+              description: the ID of the business the benefit belongs to
+              type: string
+            offerDescription:
+              description: The description of the offer
+              type: string
+            offerPrice:
+              description: The price of the offer
+              type: number
+          required:
+            - benefit_offer_id
+            
+    benefit_request_details_usage:
+      allOf:
+        - $ref: '#/components/schemas/benefit_request_details'
+        - type: object
+          properties:
+            benefit_usage_id:
+              description: The usage request id
+              type: string
+            benefit_purchased_id:
+              description: The origin benefit purchased id
+              type: string
+            purchasedPoints:
+              description: The point to reduce
+                            Required only for points type
+              type: number
+        
     benefit_code:
       description: Returned by the server for new Customer requests,
                     Send by the business for confirmation
-      type: string
+      type: number
+      minimum: 1000
+      maximum: 9999
     
-    benefit_purchase_request_redeem:
+    benefit_request_redeem:
       type: object
       properties:
-        code:
+        requestId:
           $ref: '#/components/schemas/benefit_code'
         redeemTime:
           type: string
           format: date-time
       required:
-      - code
+      - requestId
       - redeemTime
     
     benefit_purchased:
@@ -828,13 +923,11 @@ components:
         id:
           description: The offered benefit id
           type: string
-        benefit_purchased_id:
+        benefitOfferId:
           description: The origin benefit purchased id
           type: string
         type:
           $ref: '#/components/schemas/benefit_type'
-        code:
-          $ref: '#/components/schemas/benefit_code'
         name:
           type: string
         businessName:
@@ -848,7 +941,7 @@ components:
       type: object
       description: The Customer gets this object, And the business can query it
       properties:
-        id:
+        benefit_usage_id:
           description: The usage request id
           type: string
         benefit_purchased_id:
@@ -870,7 +963,7 @@ components:
         requestTime:
           type: string
           format: date-time
-          
+    
     benefit_usage:
       type: object
       properties:
@@ -890,19 +983,6 @@ components:
           type: number
         points_left:
           type: number
-    
-    benefit_used_request_redeem:
-      type: object
-      description: Only the business sending this object
-      properties:
-        code:
-          $ref: '#/components/schemas/benefit_code'
-        redeemTime:
-          type: string
-          format: date-time
-      required:
-      - code
-      - redeemTime
     
     error:
       type: object
