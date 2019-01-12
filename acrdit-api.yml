@@ -160,6 +160,52 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_offer'
+  '/customer/public/business':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all the businesses in the catalog
+      description: List all the businesses in the catalog
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/business'
+  '/customer/public/business/{businessId}/benefit_offer':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all offers of the business
+      description: List all offers of the business
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: businessId
+          in: path
+          description: The id of the busienss
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
   '/customer/{id}':
     get:
       tags:
@@ -180,6 +226,146 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customer'
+  '/customer/{id}/business':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all the businesses in the catalog
+      description: List all the businesses in the catalog
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Purchase request with code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/business'
+  '/customer/{id}/business/{businessId}/benefit_offer':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all offers of the business
+      description: List all offers of the business
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: businessId
+          in: path
+          description: The id of the busienss
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Purchase request with code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
+  '/customer/{id}/my_benefites':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all benefites the user has (favorite, purchased, Usage)
+      description: List all benefites the user has (favorite, purchased, Usage)
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Purchase request with code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/all_customer_benefits'
+  '/customer/{id}/benefit_favorite':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all the favorite benefits offered to the Customer
+      description: List all the favorite benefits offered to the Customer
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of favorite benefits offered
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/benefit_offer'
+    post:
+      tags:
+        - Customer Actions
+      summary: Add favorite to the Customer
+      description: Add favorite to the Customer
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Request to add offer to favorites
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/benefit_offer_favorite_add'
+      responses:
+        '200':
+          description: List of favorite benefits offered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
+  '/customer/{id}/benefit_favorite/{benefitOfferId}':
+    delete:
+      tags:
+        - Customer Actions
+      summary: Remove favorite from the Customer
+      description: Remove favorite from the Customer
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: benefitOfferId
+          in: path
+          description: The benefit offer to remove
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of favorite benefits offered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_offer'
   '/customer/{id}/benefit_offer':
     get:
       tags:
@@ -230,6 +416,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/benefit_purchase_request'
+  '/customer/{id}/benefit_purchased/request/{requestId}':
+    delete:
+      tags:
+        - Customer Actions
+      summary: Delete request to purchased benefit
+      description: Delete request to purchased benefit
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: requestId
+          in: path
+          description: The id spesific request
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: request deleted
   '/customer/{id}/benefit_purchased':
     get:
       tags:
@@ -279,6 +487,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/benefit_usage_request'
+  '/customer/{id}/benefit_usage/request/{requestId}':
+    delete:
+      tags:
+        - Customer Actions
+      summary: Delete request to use benefit
+      description: Delete request to use benefit
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: requestId
+          in: path
+          description: The id spesific request
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: request deleted
   '/customer/{id}/benefit_usage':
     get:
       tags:
@@ -787,6 +1017,22 @@ components:
       type: string
       enum: [purchase, use]
       
+    all_customer_benefits:
+      type: object
+      properties:
+        favorites:
+          type: array
+          items:
+            $ref: '#/components/schemas/benefit_offer'
+        purchased:
+          type: array
+          items:
+            $ref: '#/components/schemas/benefit_purchased'
+        usage:
+          type: array
+          items:
+            $ref: '#/components/schemas/benefit_usage'
+          
     benefit_offer:
       type: object
       properties:
@@ -814,6 +1060,17 @@ components:
         - validTo
         - price
         - description
+    
+    benefit_offer_favorite_add:
+      type: object
+      properties:
+        businessId:
+          type: string
+        benefitOfferId:
+          type: string
+      required:
+        - businessId
+        - benefitOfferId
     
     benefit_purchase_request:
       type: object
@@ -910,6 +1167,8 @@ components:
       properties:
         requestId:
           $ref: '#/components/schemas/benefit_code'
+        pointsToReduce:
+          type: number
         redeemTime:
           type: string
           format: date-time
