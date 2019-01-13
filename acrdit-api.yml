@@ -145,21 +145,6 @@ paths:
   # -----------------------
   # Customer Actions
   # -----------------------
-  '/customer/public/benefit_offer':
-    get:
-      tags:
-        - Customer Actions
-      summary: List all the benefits offered
-      description: List all the benefits offered
-      responses:
-        '200':
-          description: List of benefits offered
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/benefit_offer'
   '/customer/public/business':
     get:
       tags:
@@ -366,28 +351,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/benefit_offer'
-  '/customer/{id}/benefit_offer':
-    get:
-      tags:
-        - Customer Actions
-      summary: List all the benefits offered to the Customer
-      description: List all the benefits offered to the Customer
-      parameters:
-        - name: id
-          in: path
-          description: The id of the Customer
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of benefits offered
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/benefit_offer'
   '/customer/{id}/benefit_purchased/request':
     post:
       tags:
@@ -1028,10 +991,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/benefit_purchased'
-        usage:
+        suggested:
+          description: Offers the system suggesting the user
           type: array
           items:
-            $ref: '#/components/schemas/benefit_usage'
+            $ref: '#/components/schemas/benefit_purchased'
           
     benefit_offer:
       type: object
@@ -1191,7 +1155,9 @@ components:
           type: string
         businessName:
           type: string
-        pictureURL:
+        businessLogoPath:
+          type: string
+        benefitOfferPicturePath:
           type: string
         price:
           type: number
