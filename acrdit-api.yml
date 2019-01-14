@@ -494,7 +494,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_usage'              
-  
+  '/customer/{id}/transaction_history':
+    get:
+      tags:
+        - Customer Actions
+      summary: List benefit usage for the customer
+      description: List benefit usage for the customer
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of previous benefit usage 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction_history'     
   #
   # Business login
   #
@@ -896,7 +915,7 @@ components:
           type: number
         customer_id:
           type: string
-        provider_id:
+        business_id:
           type: string
 
     address:
@@ -996,7 +1015,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/benefit_purchased'
-          
+    
+    transaction_history:
+      type: object
+      properties:
+        purchased:
+          type: array
+          items:
+            $ref: '#/components/schemas/benefit_purchased'
+        usage:
+          description: Offers the system suggesting the user
+          type: array
+          items:
+            $ref: '#/components/schemas/benefit_usage'
+    
     benefit_offer:
       type: object
       properties:
@@ -1151,16 +1183,28 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/benefit_type'
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+        description:
+          type: string
         name:
           type: string
+        price:
+          type: number
+        pointsPerchased:
+          type: number
+        pointsStatus:
+          type: number
         businessName:
           type: string
         businessLogoPath:
           type: string
         benefitOfferPicturePath:
           type: string
-        price:
-          type: number
     
     benefit_usage_request:
       type: object
@@ -1208,6 +1252,12 @@ components:
           type: number
         points_left:
           type: number
+        businessName:
+          type: string
+        businessLogoPath:
+          type: string
+        benefitOfferPicturePath:
+          type: string
     
     error:
       type: object
