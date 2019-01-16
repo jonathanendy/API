@@ -541,8 +541,8 @@ paths:
     get:
       tags:
         - Business Actions
-      summary: Redeem the benefit by the business
-      description: Redeem the benefit by the business
+      summary: List the pending requests for the business
+      description: List the pending requests for the business
       parameters:
         - name: businessId
           in: path
@@ -569,8 +569,8 @@ paths:
     post:
       tags:
         - Business Actions
-      summary: Redeem the benefit by the business
-      description: Redeem the benefit by the business
+      summary: Redeem the benefit by the request id
+      description: Redeem the benefit by the request id
       parameters:
         - name: businessId
           in: path
@@ -598,8 +598,9 @@ paths:
     get:
       tags:
         - Business Actions
-      summary: (Future) List all the benefit purchase requsts for the business
-      description: List all the benefit purchase requsts for the business
+      summary: List of benefits that the business sold
+      description: List of benefits that the business sold
+                    The default is one month back and max of 100 benefits
       parameters:
         - name: businessId
           in: path
@@ -620,8 +621,8 @@ paths:
     get:
       tags:
         - Business Actions
-      summary: Get list of benefits that the business sold
-      description: Get list of benefits that the business sold
+      summary: List the finished usage requests
+      description: List the finished usage requests
                     The default is one month back and max of 100 benefits
       parameters:
         - name: businessId
