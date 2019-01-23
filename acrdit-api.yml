@@ -858,6 +858,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/benefit_offer'
+  '/admin/business/{businessId}/banner':
+    post:
+      tags:
+        - Admin Actions
+      summary: Upload business picture
+      description: Upload business picture
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File structure with base64 property
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/file_base64'
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
 # securityDefinitions:
 #  petstore_auth:
 #    type: oauth2
@@ -1147,9 +1172,12 @@ components:
             benefit_purchased_id:
               description: The origin benefit purchased id
               type: string
-            purchasedPoints:
+            pointsPerchased:
               description: The point to reduce
                             Required only for points type
+              type: number
+            pointsStatus:
+              description: Current points of the purchase
               type: number
         
     benefit_code:
