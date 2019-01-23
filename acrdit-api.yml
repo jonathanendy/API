@@ -790,7 +790,7 @@ paths:
             type: string
         - name: offerId
           in: path
-          description: The id of the business
+          description: The id of the offer
           required: true
           schema:
             type: string
@@ -815,7 +815,7 @@ paths:
             type: string
         - name: offerId
           in: path
-          description: The id of the business
+          description: The id of the offer
           required: true
           schema:
             type: string
@@ -847,7 +847,7 @@ paths:
             type: string
         - name: offerId
           in: path
-          description: The id of the business
+          description: The id of the offer
           required: true
           schema:
             type: string
@@ -868,6 +868,37 @@ paths:
         - name: businessId
           in: path
           description: The id of the business
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File structure with base64 property
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/file_base64'
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'   # <-----
+        '404':
+          $ref: '#/components/responses/NotFound'       # <-----
+  '/admin/business/{businessId}/benefit_offer/{offerId}/banner':
+    post:
+      tags:
+        - Admin Actions
+      summary: Upload Offer picture
+      description: Upload Offer picture
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business
+          required: true
+          schema:
+            type: string
+        - name: offerId
+          in: path
+          description: The id of the offer
           required: true
           schema:
             type: string
