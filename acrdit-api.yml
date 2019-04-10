@@ -16,6 +16,23 @@ tags:
   - name: Admin Actions
     description: Manage as Admin
 paths:
+  '/customer/login/signup':
+    post:
+      tags:
+        - Customer Login
+      summary: Signup by Email
+      operationId: emailSignup
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/login_request'
+      responses:
+        '200':
+          $ref: '#/components/schemas/login_response'
+        '405':
+          description: Invalid input
   '/customer/login':
     post:
       tags:
@@ -34,6 +51,55 @@ paths:
           $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
+  '/customer/login/sms/signup':
+    post:
+      tags:
+        - Customer Login
+      summary: Login by SMS
+      description: ''
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/login_request_sms_signup'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: error
+  '/customer/login/sms':
+    post:
+      tags:
+        - Customer Login
+      summary: Login by SMS
+      description: ''
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/login_request_sms'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: error
+  '/customer/login/sms/auth':
+    post:
+      tags:
+        - Customer Login
+      summary: Login by Email - use the sms code
+      description: ''
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/login_request_sms_approve'
+      responses:
+        '200':
+          $ref: '#/components/schemas/login_response'
   '/customer/login/check_email':
     post:
       tags:
@@ -52,23 +118,6 @@ paths:
               required:
               - token
       responses:
-        '405':
-          description: Invalid input
-  '/customer/login/signup':
-    post:
-      tags:
-        - Customer Login
-      summary: Signup by Email
-      operationId: emailSignup
-      requestBody:
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/login_request'
-      responses:
-        '200':
-          $ref: '#/components/schemas/login_response'
         '405':
           description: Invalid input
   '/customer/login/refresh':
@@ -955,6 +1004,37 @@ components:
         email:
           type: string
         password:
+          type: string
+    login_request_sms_signup:
+      type: object
+      properties:
+        phoneNo:
+          type: string
+          example: "+380730830376"
+        pushNotificationToken:
+          type: string
+        fullName:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        email:
+          type: string
+          description: optinal
+    login_request_sms:
+      type: object
+      properties:
+        phoneNo:
+          type: string
+          example: "+380730830376"
+        pushNotificationToken:
+          type: string
+    login_request_sms_approve:
+      type: object
+      properties:
+        phoneNo:
+          type: string
+        code:
           type: string
     
     login_response:
