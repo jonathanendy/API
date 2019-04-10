@@ -260,6 +260,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customer'
+    post:
+      tags:
+        - Customer Actions
+      summary: Update the Customer data
+      description: Update the Customer data
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The new customer info
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/customer'
+      responses:
+        '200':
+          description: Purchase request with code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
   '/customer/{id}/business':
     get:
       tags:
@@ -472,6 +498,61 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/benefit_purchased'
+  '/customer/{id}/benefit_purchased/{benefit_id}':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all the benefits the Customer purchased
+      description: List all the benefits the Customer purchased
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: benefit_id
+          in: path
+          description: The id of the benefit
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of benefits offered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_purchased'
+  '/customer/{id}/benefit_purchased/{tran_id}/rate':
+    post:
+      tags:
+        - Customer Actions
+      summary: Rate benefit purchased transaction
+      description: Rate benefit purchased transaction
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: tran_id
+          in: path
+          description: the id of the transaction
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The rating
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/transaction_rate'
+      responses:
+        '200':
+          description: Ok
   '/customer/{id}/benefit_usage/request':
     post:
       tags:
@@ -542,7 +623,62 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/benefit_usage'              
+                  $ref: '#/components/schemas/benefit_usage'
+  '/customer/{id}/benefit_usage/{benefit_id}':
+    get:
+      tags:
+        - Customer Actions
+      summary: List benefit usage for the customer
+      description: List benefit usage for the customer
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: benefit_id
+          in: path
+          description: The id of the benefit
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of previous benefit usage 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/benefit_usage'
+  '/customer/{id}/benefit_usage/{tran_id}/rate':
+    post:
+      tags:
+        - Customer Actions
+      summary: Rate benefit usage transaction
+      description: Rate benefit usage transaction
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+        - name: tran_id
+          in: path
+          description: the id of the transaction
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The rating
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/transaction_rate'
+      responses:
+        '200':
+          description: Ok
   '/customer/{id}/transaction_history':
     get:
       tags:
@@ -562,7 +698,45 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/transaction_history'     
+                $ref: '#/components/schemas/transaction_history'
+  '/customer/{id}/notification':
+    get:
+      tags:
+        - Customer Actions
+      summary: List all customer notifications
+      description: List all customer notifications
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of previous benefit usage 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/notification'
+  '/customer/{id}/notification/read':
+    put:
+      tags:
+        - Customer Actions
+      summary: Mark notification as read
+      description: Mark notification as read
+      parameters:
+        - name: id
+          in: path
+          description: The id of the Customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
   #
   # Business login
   #
@@ -1018,6 +1192,7 @@ components:
         birthDate:
           type: string
           format: date-time
+          example: "20-03-2001"
         email:
           type: string
           description: optinal
@@ -1153,6 +1328,14 @@ components:
           items:
             $ref: '#/components/schemas/benefit_purchased'
     
+    transaction_rate:
+      type: object
+      properties:
+        stars:
+          type: number
+        comment:
+          type: string
+          
     transaction_history:
       type: object
       properties:
@@ -1166,6 +1349,26 @@ components:
           items:
             $ref: '#/components/schemas/benefit_usage'
     
+    notification:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [new, read]
+        type:
+          type: string
+          enum: [text]
+        title:
+          type: string
+        text:
+          type: string
+        isPush:
+          type: boolean
+        messageLogoUrl:
+          type: string
+            
     benefit_offer:
       type: object
       properties:
