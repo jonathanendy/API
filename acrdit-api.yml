@@ -1273,6 +1273,8 @@ components:
         gender:
           type: string
           enum: [male, female]
+        pushNotificationLevel:
+          type: number
         birthDate:
           type: string
           format: date-time
