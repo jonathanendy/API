@@ -19,7 +19,7 @@ paths:
   '/customer/login/signup':
     post:
       tags:
-        - Customer Login
+        - Customer Login1
       summary: Signup by Email
       operationId: emailSignup
       requestBody:
@@ -36,7 +36,7 @@ paths:
   '/customer/login':
     post:
       tags:
-        - Customer Login
+        - Customer Login1
       summary: Login by Email
       description: ''
       operationId: login
@@ -89,7 +89,7 @@ paths:
     post:
       tags:
         - Customer Login
-      summary: Login by Email - use the sms code
+      summary: Approve the sms code
       description: ''
       requestBody:
         required: true
@@ -100,11 +100,39 @@ paths:
       responses:
         '200':
           $ref: '#/components/schemas/login_response'
-  '/customer/login/check_email':
+  '/customer/login/sms/refresh':
     post:
       tags:
         - Customer Login
-      summary: Check Email Address
+      summary: refresh the Customer token
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  description: refresh key of the customer
+                  type: string
+                phoneNo:
+                  description: phone number, unique id
+                  type: string
+                customerID:
+                  description: Customer email
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/schemas/login_response'
+        '401':
+          description: Unautorize, needs to login again
+        '405':
+          description: Invalid input
+  '/customer/login/check_email':
+    post:
+      tags:
+        - Customer Login1
+      summary: Not Active - Check Email Address
       operationId: emailCheck
       requestBody:
         required: true
@@ -120,35 +148,11 @@ paths:
       responses:
         '405':
           description: Invalid input
-  '/customer/login/refresh':
-    post:
-      tags:
-        - Customer Login
-      summary: refresh the Customer token
-      operationId: refresh token
-      requestBody:
-        required: true
-        content:
-          'application/json':
-            schema:
-              type: object
-              properties:
-                refreshToken:
-                  description: refresh key of the customer
-                  type: string
-                email:
-                  description: Customer email
-                  type: string
-      responses:
-        '200':
-          $ref: '#/components/schemas/login_response'
-        '405':
-          description: Invalid input
   '/customer/login/facebook':
     post:
       tags:
-        - Customer Login
-      summary: Login or register using a facebook token
+        - Customer Login1
+      summary: Not Active - Login or register using a facebook token
       description: 'Use scope=public_profile,email in the requset'
       operationId: loginFacebookToken
       requestBody:
@@ -170,8 +174,8 @@ paths:
   '/customer/login/google':
     post:
       tags:
-        - Customer Login
-      summary: Login or register using a Google token
+        - Customer Login1
+      summary: Not Active - Login or register using a Google token
       description: 'Use scope=profile,email in the requset'
       operationId: loginGoogleToken
       requestBody:
