@@ -1534,7 +1534,7 @@ components:
         validTo:
           type: string
           format: date-time
-        description:
+        offerDescription:
           type: string
         name:
           type: string
@@ -1602,6 +1602,10 @@ components:
         businessLogoPath:
           type: string
         benefitOfferPicturePath:
+          type: string
+        clubLogoPath:
+          type: string
+        offerDescription:
           type: string
     
     error:
